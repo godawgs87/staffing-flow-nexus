@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Users, Briefcase, BarChart3, GitBranch, Menu, Bell, Search, User } from 'lucide-react';
+import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +13,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Dashboard', href: '/', icon: BarChart3 },
     { name: 'Candidates', href: '/candidates', icon: Users },
     { name: 'Jobs', href: '/jobs', icon: Briefcase },
+    { name: 'Projects', href: '/projects', icon: FolderOpen },
     { name: 'Pipeline', href: '/pipeline', icon: GitBranch },
+    { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
   const isActive = (href: string) => {
