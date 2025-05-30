@@ -1,13 +1,22 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from '../components/Layout';
+import Dashboard from '../components/Dashboard';
+import Candidates from '../components/Candidates';
+import Jobs from '../components/Jobs';
+import Pipeline from '../components/Pipeline';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/candidates" element={<Candidates />} />
+        <Route path="/jobs" element={<Jobs />} />
+        <Route path="/pipeline" element={<Pipeline />} />
+      </Routes>
+    </Layout>
   );
 };
 
