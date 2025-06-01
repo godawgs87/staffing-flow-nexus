@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User, UserCheck, DollarSign } from 'lucide-react';
+import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User, UserCheck, DollarSign, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +17,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Pipeline', href: '/pipeline', icon: GitBranch },
     { name: 'Onboarding', href: '/onboarding', icon: UserCheck },
     { name: 'Payroll', href: '/payroll', icon: DollarSign },
+    { name: 'Admin', href: '/admin', icon: Shield },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 

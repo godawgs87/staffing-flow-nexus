@@ -10,6 +10,7 @@ import Pipeline from '../components/Pipeline';
 import OnboardingWorkflow from '../components/OnboardingWorkflow';
 import PayrollManagement from '../components/PayrollManagement';
 import WorkflowSettings from '../components/WorkflowSettings';
+import AdminDashboard from '../components/AdminDashboard';
 
 const Index = () => {
   return (
@@ -22,6 +23,7 @@ const Index = () => {
         <Route path="/pipeline" element={<Pipeline />} />
         <Route path="/onboarding" element={<OnboardingWorkflow />} />
         <Route path="/payroll" element={<PayrollManagement />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/settings" element={<WorkflowSettings />} />
       </Routes>
     </Layout>
