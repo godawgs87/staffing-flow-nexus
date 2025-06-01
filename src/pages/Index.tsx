@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -9,7 +8,7 @@ import Projects from '../components/Projects';
 import Pipeline from '../components/Pipeline';
 import OnboardingWorkflow from '../components/OnboardingWorkflow';
 import PayrollManagement from '../components/PayrollManagement';
-import WorkflowSettings from '../components/WorkflowSettings';
+import UserSettings from '../components/UserSettings';
 import AdminDashboard from '../components/AdminDashboard';
 
 const Index = () => {
@@ -24,7 +23,7 @@ const Index = () => {
         <Route path="/onboarding" element={<OnboardingWorkflow />} />
         <Route path="/payroll" element={<PayrollManagement />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/settings" element={<WorkflowSettings />} />
+        <Route path="/settings" element={<UserSettings />} />
       </Routes>
     </Layout>
   );
