@@ -7,6 +7,8 @@ import Candidates from '../components/Candidates';
 import Jobs from '../components/Jobs';
 import Projects from '../components/Projects';
 import Pipeline from '../components/Pipeline';
+import OnboardingWorkflow from '../components/OnboardingWorkflow';
+import PayrollManagement from '../components/PayrollManagement';
 import WorkflowSettings from '../components/WorkflowSettings';
 
 const Index = () => {
@@ -18,6 +20,8 @@ const Index = () => {
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/pipeline" element={<Pipeline />} />
+        <Route path="/onboarding" element={<OnboardingWorkflow />} />
+        <Route path="/payroll" element={<PayrollManagement />} />
         <Route path="/settings" element={<WorkflowSettings />} />
       </Routes>
     </Layout>
