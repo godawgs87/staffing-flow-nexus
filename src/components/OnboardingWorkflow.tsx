@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -221,7 +220,7 @@ const OnboardingWorkflow = () => {
                       {Object.entries(candidate.documents).map(([doc, status]) => (
                         <div key={doc} className="flex items-center justify-between">
                           <span className="text-sm capitalize">{doc.replace(/([A-Z])/g, ' $1')}</span>
-                          <Badge className={getStatusColor(status)} size="sm">
+                          <Badge className={getStatusColor(status)}>
                             {status}
                           </Badge>
                         </div>
@@ -239,7 +238,7 @@ const OnboardingWorkflow = () => {
                       {Object.entries(candidate.compliance).map(([item, status]) => (
                         <div key={item} className="flex items-center justify-between">
                           <span className="text-sm capitalize">{item.replace(/([A-Z])/g, ' $1')}</span>
-                          <Badge className={getStatusColor(status)} size="sm">
+                          <Badge className={getStatusColor(status)}>
                             {status}
                           </Badge>
                         </div>
