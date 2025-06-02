@@ -66,25 +66,40 @@ export const useCandidateForm = (candidate?: Candidate, mode: 'add' | 'edit' | '
 
   const mutation = useMutation({
     mutationFn: async (data: CandidateFormData) => {
-      const candidateData: CandidateInsert | CandidateUpdate = {
-        first_name: data.first_name,
-        last_name: data.last_name,
-        email: data.email || null,
-        phone: data.phone || null,
-        title: data.title || null,
-        location: data.location || null,
-        status: data.status as Database['public']['Enums']['candidate_status'],
-        skills: data.skills ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : null,
-        experience_years: data.experience_years ? parseInt(data.experience_years) : null,
-        salary_expectation_min: data.salary_expectation_min ? parseInt(data.salary_expectation_min) : null,
-        salary_expectation_max: data.salary_expectation_max ? parseInt(data.salary_expectation_max) : null,
-        company_id: data.company_id || null,
-      };
-
       if (mode === 'add') {
-        const { error } = await supabase.from('candidates').insert([candidateData]);
+        const candidateData: CandidateInsert = {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email || null,
+          phone: data.phone || null,
+          title: data.title || null,
+          location: data.location || null,
+          status: data.status as Database['public']['Enums']['candidate_status'],
+          skills: data.skills ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : null,
+          experience_years: data.experience_years ? parseInt(data.experience_years) : null,
+          salary_expectation_min: data.salary_expectation_min ? parseInt(data.salary_expectation_min) : null,
+          salary_expectation_max: data.salary_expectation_max ? parseInt(data.salary_expectation_max) : null,
+          company_id: data.company_id || null,
+        };
+
+        const { error } = await supabase.from('candidates').insert(candidateData);
         if (error) throw error;
       } else if (mode === 'edit' && candidate?.id) {
+        const candidateData: CandidateUpdate = {
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email || null,
+          phone: data.phone || null,
+          title: data.title || null,
+          location: data.location || null,
+          status: data.status as Database['public']['Enums']['candidate_status'],
+          skills: data.skills ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : null,
+          experience_years: data.experience_years ? parseInt(data.experience_years) : null,
+          salary_expectation_min: data.salary_expectation_min ? parseInt(data.salary_expectation_min) : null,
+          salary_expectation_max: data.salary_expectation_max ? parseInt(data.salary_expectation_max) : null,
+          company_id: data.company_id || null,
+        };
+
         const { error } = await supabase.from('candidates').update(candidateData).eq('id', candidate.id);
         if (error) throw error;
       }
