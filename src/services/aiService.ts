@@ -1,10 +1,9 @@
-
 import { ContractAnalysisService, ContractAnalysis } from './ai/contractAnalysis';
 import { ResumeAnalysisService, ResumeAnalysis } from './ai/resumeAnalysis';
 import { JobGenerationService } from './ai/jobGeneration';
 
-export { ContractAnalysis, ResumeAnalysis } from './ai/contractAnalysis';
-export type { ResumeAnalysis as ResumeAnalysisType } from './ai/resumeAnalysis';
+export type { ContractAnalysis } from './ai/contractAnalysis';
+export type { ResumeAnalysis } from './ai/resumeAnalysis';
 
 export class AIService {
   private static instance: AIService;
