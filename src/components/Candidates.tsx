@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { User } from 'lucide-react';
 import CandidateDetails from './CandidateDetails';
@@ -8,6 +7,9 @@ import CandidateSearchBar from './candidates/CandidateSearchBar';
 import CandidateListHeader from './candidates/CandidateListHeader';
 import CandidateEmptyState from './candidates/CandidateEmptyState';
 import { useCandidates } from '@/hooks/useCandidates';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 
 const Candidates = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +24,7 @@ const Candidates = () => {
   });
   
   const { data: candidates = [], isLoading, error } = useCandidates();
+  const isMobile = useIsMobile();
 
   const filteredCandidates = candidates.filter(candidate =>
     `${candidate.first_name} ${candidate.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,9 +40,21 @@ const Candidates = () => {
     setModalState({ isOpen: false, mode: 'add' });
   };
 
+  const handleCandidateSelect = (candidate: any) => {
+    setSelectedCandidate(candidate);
+    // On mobile, don't show the sidebar details
+    if (!isMobile) {
+      // Desktop behavior remains the same
+    }
+  };
+
+  const closeDetailsPanel = () => {
+    setSelectedCandidate(null);
+  };
+
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
@@ -52,7 +67,7 @@ const Candidates = () => {
 
   if (error) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
@@ -63,10 +78,18 @@ const Candidates = () => {
     );
   }
 
+  const DetailsComponent = () => (
+    <CandidateDetails
+      candidate={selectedCandidate}
+      onEdit={() => openModal('edit', selectedCandidate)}
+      onClose={isMobile ? closeDetailsPanel : undefined}
+    />
+  );
+
   return (
     <div className="flex h-full w-full">
-      {/* Main Content - Left Side */}
-      <div className="flex-1 p-6 space-y-6 overflow-auto">
+      {/* Main Content */}
+      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-4 md:p-6 space-y-6 overflow-auto`}>
         <CandidateListHeader 
           totalCount={candidates.length}
           onAddCandidate={() => openModal('add')}
@@ -83,26 +106,36 @@ const Candidates = () => {
             <CandidateListItem
               key={candidate.id}
               candidate={candidate}
-              isSelected={selectedCandidate?.id === candidate.id}
-              onSelect={setSelectedCandidate}
-              onView={(candidate) => openModal('view', candidate)}
+              isSelected={!isMobile && selectedCandidate?.id === candidate.id}
+              onSelect={handleCandidateSelect}
+              onView={(candidate) => isMobile ? setSelectedCandidate(candidate) : openModal('view', candidate)}
               onEdit={(candidate) => openModal('edit', candidate)}
             />
           ))}
         </div>
       </div>
 
-      {/* Details Panel - Right Side */}
-      <div className="w-96 border-l bg-white flex-shrink-0 overflow-auto">
-        {selectedCandidate ? (
-          <CandidateDetails
-            candidate={selectedCandidate}
-            onEdit={() => openModal('edit', selectedCandidate)}
-          />
-        ) : (
-          <CandidateEmptyState />
-        )}
-      </div>
+      {/* Desktop Details Panel */}
+      {!isMobile && (
+        <div className="w-96 border-l bg-white flex-shrink-0 overflow-auto">
+          {selectedCandidate ? (
+            <DetailsComponent />
+          ) : (
+            <CandidateEmptyState />
+          )}
+        </div>
+      )}
+
+      {/* Mobile Details Modal/Drawer */}
+      {isMobile && selectedCandidate && (
+        <Drawer open={!!selectedCandidate} onOpenChange={(open) => !open && closeDetailsPanel()}>
+          <DrawerContent className="h-[85vh]">
+            <div className="overflow-auto">
+              <DetailsComponent />
+            </div>
+          </DrawerContent>
+        </Drawer>
+      )}
 
       <CandidateModal
         isOpen={modalState.isOpen}

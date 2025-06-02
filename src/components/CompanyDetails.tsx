@@ -1,12 +1,14 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Building2, Edit, Globe, MapPin, Users, Briefcase, ExternalLink } from 'lucide-react';
+import { Building2, Edit, Globe, MapPin, Users, Briefcase, ExternalLink, X } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CompanyDetailsProps {
   company: any;
   onEdit: () => void;
+  onClose?: () => void;
   stats?: {
     activeJobs: number;
     totalContacts: number;
@@ -15,9 +17,20 @@ interface CompanyDetailsProps {
   };
 }
 
-const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
+const CompanyDetails = ({ company, onEdit, onClose, stats }: CompanyDetailsProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="w-full space-y-6">
+      {/* Mobile Close Button */}
+      {isMobile && onClose && (
+        <div className="flex justify-end p-4 pb-0">
+          <Button onClick={onClose} size="sm" variant="ghost">
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
       {/* Header Section */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex items-start justify-between mb-6">

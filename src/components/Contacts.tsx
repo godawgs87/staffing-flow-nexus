@@ -7,6 +7,8 @@ import ContactSearchBar from './contacts/ContactSearchBar';
 import ContactListItem from './contacts/ContactListItem';
 import ContactEmptyState from './contacts/ContactEmptyState';
 import { useContacts } from '@/hooks/useContacts';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 
 const Contacts = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,6 +23,7 @@ const Contacts = () => {
   });
   
   const { data: contacts = [], isLoading, error } = useContacts();
+  const isMobile = useIsMobile();
 
   const filteredContacts = contacts.filter(contact =>
     `${contact.first_name} ${contact.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,9 +39,17 @@ const Contacts = () => {
     setModalState({ isOpen: false, mode: 'add' });
   };
 
+  const handleContactSelect = (contact: any) => {
+    setSelectedContact(contact);
+  };
+
+  const closeDetailsPanel = () => {
+    setSelectedContact(null);
+  };
+
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
@@ -51,7 +62,7 @@ const Contacts = () => {
 
   if (error) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
@@ -62,17 +73,23 @@ const Contacts = () => {
     );
   }
 
+  const DetailsComponent = () => (
+    <ContactDetails
+      contact={selectedContact}
+      onEdit={() => openModal('edit', selectedContact)}
+      onClose={isMobile ? closeDetailsPanel : undefined}
+    />
+  );
+
   return (
     <div className="flex h-full w-full">
-      {/* Main Content - Left Side */}
-      <div className="flex-1 p-6 space-y-6 overflow-auto">
-        {/* Header */}
+      {/* Main Content */}
+      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-4 md:p-6 space-y-6 overflow-auto`}>
         <ContactListHeader 
           totalCount={contacts.length} 
           onAddContact={() => openModal('add')} 
         />
 
-        {/* Search and Filters */}
         <ContactSearchBar 
           searchTerm={searchTerm} 
           onSearchChange={setSearchTerm} 
@@ -84,26 +101,36 @@ const Contacts = () => {
             <ContactListItem
               key={contact.id}
               contact={contact}
-              isSelected={selectedContact?.id === contact.id}
-              onSelect={setSelectedContact}
-              onView={(contact) => openModal('view', contact)}
+              isSelected={!isMobile && selectedContact?.id === contact.id}
+              onSelect={handleContactSelect}
+              onView={(contact) => isMobile ? setSelectedContact(contact) : openModal('view', contact)}
               onEdit={(contact) => openModal('edit', contact)}
             />
           ))}
         </div>
       </div>
 
-      {/* Details Panel - Right Side */}
-      <div className="w-96 border-l bg-white flex-shrink-0 overflow-auto">
-        {selectedContact ? (
-          <ContactDetails
-            contact={selectedContact}
-            onEdit={() => openModal('edit', selectedContact)}
-          />
-        ) : (
-          <ContactEmptyState />
-        )}
-      </div>
+      {/* Desktop Details Panel */}
+      {!isMobile && (
+        <div className="w-96 border-l bg-white flex-shrink-0 overflow-auto">
+          {selectedContact ? (
+            <DetailsComponent />
+          ) : (
+            <ContactEmptyState />
+          )}
+        </div>
+      )}
+
+      {/* Mobile Details Modal/Drawer */}
+      {isMobile && selectedContact && (
+        <Drawer open={!!selectedContact} onOpenChange={(open) => !open && closeDetailsPanel()}>
+          <DrawerContent className="h-[85vh]">
+            <div className="overflow-auto">
+              <DetailsComponent />
+            </div>
+          </DrawerContent>
+        </Drawer>
+      )}
 
       <ContactModal
         isOpen={modalState.isOpen}

@@ -1,18 +1,20 @@
 
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User, UserCheck, DollarSign, Shield, Brain, Building2, Contact, SearchIcon, LogOut } from 'lucide-react';
+import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User, UserCheck, DollarSign, Shield, Brain, Building2, Contact, SearchIcon, LogOut, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import UniversalSearch from './search/UniversalSearch';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const { signOut, user } = useAuth();
+  const isMobile = useIsMobile();
 
   const navigationGroups = [
     {
@@ -77,25 +79,50 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div className="min-h-screen bg-gray-50 flex w-full">
+      {/* Mobile Sidebar Overlay */}
+      {isMobile && sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={closeSidebar}
+        />
+      )}
+
       {/* Sidebar */}
       <nav className={`${
-        sidebarOpen ? 'w-64' : 'w-16'
+        isMobile 
+          ? `fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ${
+              sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`
+          : sidebarOpen 
+            ? 'w-64' 
+            : 'w-16'
       } bg-white shadow-sm border-r min-h-screen transition-all duration-300 flex-shrink-0`}>
         <div className="p-4">
+          {/* Mobile close button */}
+          {isMobile && (
+            <div className="flex justify-end mb-4">
+              <Button variant="ghost" size="sm" onClick={closeSidebar}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+
           {/* Logo and title */}
           <div className="flex items-center space-x-3 mb-8">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <Users className="h-5 w-5 text-white" />
             </div>
-            {sidebarOpen && <h1 className="text-xl font-bold text-gray-900">TalentFlow</h1>}
+            {(sidebarOpen || isMobile) && <h1 className="text-xl font-bold text-gray-900">TalentFlow</h1>}
           </div>
 
           {/* Navigation groups */}
           {navigationGroups.map((group) => (
             <div key={group.title} className="mb-6">
-              {sidebarOpen && (
+              {(sidebarOpen || isMobile) && (
                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3">
                   {group.title}
                 </h3>
@@ -107,6 +134,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     <li key={item.name}>
                       <Link
                         to={item.href}
+                        onClick={isMobile ? closeSidebar : undefined}
                         className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           isActive(item.href)
                             ? 'bg-blue-50 text-blue-700'
@@ -114,7 +142,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                         }`}
                       >
                         <Icon className="h-4 w-4 flex-shrink-0" />
-                        {sidebarOpen && <span className="ml-3">{item.name}</span>}
+                        {(sidebarOpen || isMobile) && <span className="ml-3">{item.name}</span>}
                       </Link>
                     </li>
                   );
@@ -129,7 +157,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Header */}
         <header className="bg-white shadow-sm border-b flex-shrink-0">
-          <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center justify-between px-4 md:px-6 py-4">
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -140,15 +168,16 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </Button>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => setSearchOpen(true)}
-                className="w-64 justify-start text-gray-500"
+                className="w-32 md:w-64 justify-start text-gray-500"
               >
                 <SearchIcon className="h-4 w-4 mr-2" />
-                Search candidates, companies...
+                <span className="hidden md:inline">Search candidates, companies...</span>
+                <span className="md:hidden">Search...</span>
               </Button>
               <Button variant="ghost" size="sm" className="relative">
                 <Bell className="h-5 w-5" />
@@ -156,8 +185,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   3
                 </Badge>
               </Button>
-              <div className="flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-2">
                 <span className="text-sm text-gray-600">{user?.email}</span>
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="md:hidden">
                 <Button variant="ghost" size="sm" onClick={handleSignOut}>
                   <LogOut className="h-5 w-5" />
                 </Button>
@@ -166,7 +200,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </header>
 
-        {/* Main Content - Full width utilization with no padding */}
+        {/* Main Content */}
         <main className="flex-1 overflow-auto w-full bg-gray-50">
           <div className="w-full h-full">
             {children}

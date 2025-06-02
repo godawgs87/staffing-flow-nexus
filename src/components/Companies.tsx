@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import CompanyDetails from './CompanyDetails';
 import CompanyModal from './modals/CompanyModal';
@@ -11,6 +10,8 @@ import { useJobs } from '@/hooks/useJobs';
 import { useContacts } from '@/hooks/useContacts';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,6 +28,7 @@ const Companies = () => {
   const { data: companies = [], isLoading, error } = useCompanies();
   const { data: jobs = [] } = useJobs();
   const { data: contacts = [] } = useContacts();
+  const isMobile = useIsMobile();
 
   // Fetch notes count for each company
   const { data: notesData = [] } = useQuery({
@@ -71,9 +73,17 @@ const Companies = () => {
     setModalState({ isOpen: false, mode: 'add' });
   };
 
+  const handleCompanySelect = (company: any) => {
+    setSelectedCompany(company);
+  };
+
+  const closeDetailsPanel = () => {
+    setSelectedCompany(null);
+  };
+
   if (isLoading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6">
         <CompanyListHeader totalCount={0} onAddCompany={() => openModal('add')} />
         <p className="text-gray-600">Loading companies...</p>
       </div>
@@ -82,17 +92,26 @@ const Companies = () => {
 
   if (error) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6">
         <CompanyListHeader totalCount={0} onAddCompany={() => openModal('add')} />
         <p className="text-red-600">Error loading companies: {error.message}</p>
       </div>
     );
   }
 
+  const DetailsComponent = () => (
+    <CompanyDetails
+      company={selectedCompany}
+      onEdit={() => openModal('edit', selectedCompany)}
+      stats={getCompanyStats(selectedCompany.id)}
+      onClose={isMobile ? closeDetailsPanel : undefined}
+    />
+  );
+
   return (
     <div className="flex h-full w-full">
-      {/* Main Content - Left Side */}
-      <div className="flex-1 p-6 space-y-6 overflow-auto">
+      {/* Main Content */}
+      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-4 md:p-6 space-y-6 overflow-auto`}>
         <CompanyListHeader 
           totalCount={companies.length} 
           onAddCompany={() => openModal('add')} 
@@ -113,9 +132,9 @@ const Companies = () => {
                 key={company.id}
                 company={company}
                 stats={stats}
-                isSelected={selectedCompany?.id === company.id}
-                onSelect={() => setSelectedCompany(company)}
-                onView={() => openModal('view', company)}
+                isSelected={!isMobile && selectedCompany?.id === company.id}
+                onSelect={() => handleCompanySelect(company)}
+                onView={() => isMobile ? setSelectedCompany(company) : openModal('view', company)}
                 onEdit={() => openModal('edit', company)}
               />
             );
@@ -123,18 +142,27 @@ const Companies = () => {
         </div>
       </div>
 
-      {/* Details Panel - Right Side */}
-      <div className="w-96 border-l bg-white flex-shrink-0 overflow-auto">
-        {selectedCompany ? (
-          <CompanyDetails
-            company={selectedCompany}
-            onEdit={() => openModal('edit', selectedCompany)}
-            stats={getCompanyStats(selectedCompany.id)}
-          />
-        ) : (
-          <CompanyEmptyState />
-        )}
-      </div>
+      {/* Desktop Details Panel */}
+      {!isMobile && (
+        <div className="w-96 border-l bg-white flex-shrink-0 overflow-auto">
+          {selectedCompany ? (
+            <DetailsComponent />
+          ) : (
+            <CompanyEmptyState />
+          )}
+        </div>
+      )}
+
+      {/* Mobile Details Modal/Drawer */}
+      {isMobile && selectedCompany && (
+        <Drawer open={!!selectedCompany} onOpenChange={(open) => !open && closeDetailsPanel()}>
+          <DrawerContent className="h-[85vh]">
+            <div className="overflow-auto">
+              <DetailsComponent />
+            </div>
+          </DrawerContent>
+        </Drawer>
+      )}
 
       <CompanyModal
         isOpen={modalState.isOpen}

@@ -2,15 +2,19 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Phone, MapPin, Calendar, DollarSign, Edit, ExternalLink, Linkedin, Globe } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, DollarSign, Edit, ExternalLink, Linkedin, Globe, X } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CandidateDetailsProps {
   candidate: any;
   onEdit: () => void;
+  onClose?: () => void;
 }
 
-const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
+const CandidateDetails = ({ candidate, onEdit, onClose }: CandidateDetailsProps) => {
+  const isMobile = useIsMobile();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'new': return 'bg-gray-100 text-gray-800';
@@ -28,11 +32,11 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
       {/* Header Section */}
       <div className="p-4 border-b">
         <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 flex-1">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
               <User className="h-6 w-6 text-blue-600" />
             </div>
-            <div>
+            <div className="flex-1">
               <h1 className="text-xl font-bold text-gray-900">{candidate.first_name} {candidate.last_name}</h1>
               <p className="text-gray-600 text-sm">{candidate.title || 'No title specified'}</p>
               <Badge className={getStatusColor(candidate.status)}>
@@ -40,10 +44,17 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
               </Badge>
             </div>
           </div>
-          <Button onClick={onEdit} size="sm">
-            <Edit className="h-3 w-3 mr-1" />
-            Edit
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button onClick={onEdit} size="sm">
+              <Edit className="h-3 w-3 mr-1" />
+              Edit
+            </Button>
+            {isMobile && onClose && (
+              <Button onClick={onClose} size="sm" variant="ghost">
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Information - Compact Layout */}
