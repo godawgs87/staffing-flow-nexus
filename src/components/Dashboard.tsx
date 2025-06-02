@@ -1,8 +1,5 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Users, Briefcase, FileText, TrendingUp } from 'lucide-react';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useContacts } from '@/hooks/useContacts';
@@ -10,6 +7,10 @@ import { useCandidates } from '@/hooks/useCandidates';
 import { useJobs } from '@/hooks/useJobs';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
+import MetricsCard from './dashboard/MetricsCard';
+import ApplicationsChart from './dashboard/ApplicationsChart';
+import PipelineChart from './dashboard/PipelineChart';
+import RecentActivity from './dashboard/RecentActivity';
 
 const Dashboard = () => {
   const { data: companies = [] } = useCompanies();
@@ -24,6 +25,20 @@ const Dashboard = () => {
       const { data, error } = await supabase
         .from('notes')
         .select('id');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
+
+  // Fetch applications for analytics
+  const { data: applications = [] } = useQuery({
+    queryKey: ['applications-analytics'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('job_applications')
+        .select('*')
+        .order('applied_at', { ascending: false });
       
       if (error) throw error;
       return data;
@@ -53,41 +68,73 @@ const Dashboard = () => {
       color: 'text-purple-600' 
     },
     { 
-      title: 'Total Notes', 
-      value: notesData.length.toString(), 
+      title: 'Total Applications', 
+      value: applications.length.toString(), 
       icon: TrendingUp, 
       change: '+15%', 
       color: 'text-orange-600' 
     },
   ];
 
-  // Get recent candidates
-  const recentCandidates = candidates
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 4)
-    .map(candidate => ({
-      name: `${candidate.first_name} ${candidate.last_name}`,
-      position: candidate.title || 'No title',
-      status: candidate.status,
-      avatar: `${candidate.first_name[0]}${candidate.last_name[0]}`
-    }));
+  // Generate chart data
+  const chartData = [
+    { month: 'Jan', applications: 45, hired: 8 },
+    { month: 'Feb', applications: 52, hired: 12 },
+    { month: 'Mar', applications: 38, hired: 6 },
+    { month: 'Apr', applications: 61, hired: 15 },
+    { month: 'May', applications: 47, hired: 9 },
+    { month: 'Jun', applications: 55, hired: 11 },
+  ];
 
-  // Get top jobs with realistic application counts
-  const topJobs = jobs
-    .filter(job => job.status === 'open')
-    .slice(0, 4)
-    .map(job => {
-      // Simulate realistic application data
-      const applications = Math.floor(Math.random() * 25) + 5;
-      const progress = Math.min((applications / 20) * 100, 100);
-      
-      return {
-        title: job.title,
-        company: job.companies?.name || 'No company',
-        applications: applications,
-        filled: Math.round(progress)
-      };
+  // Pipeline distribution data
+  const pipelineData = [
+    { name: 'Applied', value: applications.filter(app => app.status === 'applied').length, color: '#3b82f6' },
+    { name: 'Screening', value: applications.filter(app => app.status === 'screening').length, color: '#eab308' },
+    { name: 'Interview', value: applications.filter(app => app.status === 'interview').length, color: '#a855f7' },
+    { name: 'Offer', value: applications.filter(app => app.status === 'offer').length, color: '#f97316' },
+    { name: 'Hired', value: applications.filter(app => app.status === 'hired').length, color: '#10b981' },
+    { name: 'Rejected', value: applications.filter(app => app.status === 'rejected').length, color: '#ef4444' },
+  ];
+
+  // Generate recent activity data
+  const recentActivities = React.useMemo(() => {
+    const activities = [];
+    
+    // Add recent applications
+    applications.slice(0, 3).forEach(app => {
+      activities.push({
+        id: `app-${app.id}`,
+        type: 'application' as const,
+        message: `New application received`,
+        timestamp: new Date(app.applied_at),
+        status: app.status
+      });
     });
+
+    // Add recent candidates
+    candidates.slice(0, 2).forEach(candidate => {
+      activities.push({
+        id: `candidate-${candidate.id}`,
+        type: 'application' as const,
+        message: `${candidate.first_name} ${candidate.last_name} added to system`,
+        timestamp: new Date(candidate.created_at),
+        status: candidate.status
+      });
+    });
+
+    // Add recent jobs
+    jobs.slice(0, 2).forEach(job => {
+      activities.push({
+        id: `job-${job.id}`,
+        type: 'new_job' as const,
+        message: `New job posted: ${job.title}`,
+        timestamp: new Date(job.created_at),
+        status: job.status
+      });
+    });
+
+    return activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()).slice(0, 8);
+  }, [applications, candidates, jobs]);
 
   return (
     <div className="space-y-6">
@@ -99,88 +146,20 @@ const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                    <p className={`text-sm ${stat.color}`}>{stat.change} from last month</p>
-                  </div>
-                  <div className={`p-3 rounded-full bg-gray-50`}>
-                    <Icon className={`h-6 w-6 ${stat.color}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {stats.map((stat, index) => (
+          <MetricsCard key={index} {...stat} />
+        ))}
       </div>
 
+      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Candidates */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Candidates</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentCandidates.map((candidate, index) => (
-                <div key={index} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-blue-700">{candidate.avatar}</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{candidate.name}</p>
-                      <p className="text-sm text-gray-600">{candidate.position}</p>
-                    </div>
-                  </div>
-                  <Badge variant={
-                    candidate.status === 'offer' ? 'default' :
-                    candidate.status === 'interview' ? 'secondary' :
-                    candidate.status === 'screening' ? 'outline' : 'secondary'
-                  }>
-                    {candidate.status}
-                  </Badge>
-                </div>
-              ))}
-              {recentCandidates.length === 0 && (
-                <p className="text-center text-gray-500 py-4">No candidates yet</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <ApplicationsChart data={chartData} />
+        <PipelineChart data={pipelineData} />
+      </div>
 
-        {/* Top Jobs */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Active Job Openings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {topJobs.map((job, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-medium text-gray-900">{job.title}</h4>
-                      <p className="text-sm text-gray-600">{job.company}</p>
-                    </div>
-                    <span className="text-sm text-gray-600">{job.applications} applications</span>
-                  </div>
-                  <Progress value={job.filled} className="h-2" />
-                  <p className="text-xs text-gray-500">{job.filled}% progress</p>
-                </div>
-              ))}
-              {topJobs.length === 0 && (
-                <p className="text-center text-gray-500 py-4">No active jobs</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+      {/* Bottom Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <RecentActivity activities={recentActivities} />
       </div>
     </div>
   );
