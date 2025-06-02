@@ -6,16 +6,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, User, Calendar } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 interface Note {
   id: string;
   content: string;
-  entityType: 'candidate' | 'contact' | 'company' | 'job' | 'project';
-  entityId: string;
-  createdAt: string;
-  updatedAt: string;
-  author: string;
+  entity_type: 'candidate' | 'contact' | 'company' | 'job' | 'project';
+  entity_id: string;
+  priority: 'low' | 'medium' | 'high';
   tags?: string[];
+  author_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface NotesPanelProps {
@@ -32,31 +34,16 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
 
   const queryClient = useQueryClient();
 
-  // Mock notes data - replace with actual Supabase queries
   const fetchNotes = async (): Promise<Note[]> => {
-    // Simulated notes
-    return [
-      {
-        id: '1',
-        content: 'Initial interview went well. Strong technical skills, good communication.',
-        entityType,
-        entityId,
-        createdAt: '2024-06-01T10:00:00Z',
-        updatedAt: '2024-06-01T10:00:00Z',
-        author: 'John Doe',
-        tags: ['interview', 'technical']
-      },
-      {
-        id: '2',
-        content: 'Follow up needed on salary expectations. Client budget is $120k-140k.',
-        entityType,
-        entityId,
-        createdAt: '2024-06-02T14:30:00Z',
-        updatedAt: '2024-06-02T14:30:00Z',
-        author: 'Jane Smith',
-        tags: ['salary', 'negotiation']
-      }
-    ];
+    const { data, error } = await supabase
+      .from('notes')
+      .select('*')
+      .eq('entity_type', entityType)
+      .eq('entity_id', entityId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
   };
 
   const { data: notes = [], isLoading } = useQuery({
@@ -66,9 +53,22 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
 
   const addNoteMutation = useMutation({
     mutationFn: async (content: string) => {
-      // Mock API call - replace with Supabase
-      console.log('Adding note:', content);
-      return { id: Date.now().toString(), content };
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('notes')
+        .insert({
+          entity_type: entityType,
+          entity_id: entityId,
+          content,
+          author_id: user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes', entityType, entityId] });
@@ -79,9 +79,15 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
 
   const updateNoteMutation = useMutation({
     mutationFn: async ({ id, content }: { id: string; content: string }) => {
-      // Mock API call - replace with Supabase
-      console.log('Updating note:', id, content);
-      return { id, content };
+      const { data, error } = await supabase
+        .from('notes')
+        .update({ content })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes', entityType, entityId] });
@@ -92,8 +98,12 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
 
   const deleteNoteMutation = useMutation({
     mutationFn: async (id: string) => {
-      // Mock API call - replace with Supabase
-      console.log('Deleting note:', id);
+      const { error } = await supabase
+        .from('notes')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
       return id;
     },
     onSuccess: () => {
@@ -225,9 +235,9 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <User className="h-4 w-4" />
-                        <span>{note.author}</span>
+                        <span>User</span>
                         <Calendar className="h-4 w-4 ml-2" />
-                        <span>{formatDate(note.createdAt)}</span>
+                        <span>{formatDate(note.created_at)}</span>
                       </div>
                       <div className="flex space-x-1">
                         <Button 

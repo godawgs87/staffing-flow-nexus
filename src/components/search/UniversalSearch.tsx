@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -22,54 +21,26 @@ interface UniversalSearchProps {
 }
 
 const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
 
-  // Mock search function - replace with actual Supabase query
-  const searchData = async (term: string): Promise<SearchResult[]> => {
-    // Simulated search results
-    const mockResults: SearchResult[] = [
-      {
-        id: '1',
-        type: 'candidate',
-        title: 'Sarah Johnson',
-        subtitle: 'Senior Frontend Developer',
-        status: 'Active',
-        notes: 3
-      },
-      {
-        id: '2',
-        type: 'company',
-        title: 'TechCorp Inc.',
-        subtitle: 'Software Development Company',
-        notes: 5
-      },
-      {
-        id: '3',
-        type: 'contact',
-        title: 'Mike Chen',
-        subtitle: 'Hiring Manager at TechCorp Inc.',
-        notes: 2
-      },
-      {
-        id: '4',
-        type: 'job',
-        title: 'React Developer Position',
-        subtitle: 'TechCorp Inc. • Remote',
-        status: 'Open'
-      }
-    ];
-
-    return mockResults.filter(result => 
-      result.title.toLowerCase().includes(term.toLowerCase()) ||
-      result.subtitle.toLowerCase().includes(term.toLowerCase())
-    );
-  };
-
   const { data: results = [], isLoading } = useQuery({
-    queryKey: ['search', searchTerm],
-    queryFn: () => searchData(searchTerm),
-    enabled: searchTerm.length > 0
+    queryKey: ['universal-search', search, selectedType],
+    queryFn: async () => {
+      if (!search.trim()) return [];
+      
+      const { data, error } = await supabase.functions.invoke('universal-search', {
+        body: {
+          query: search.trim(),
+          types: selectedType === 'all' ? null : [selectedType],
+          limit: 20
+        }
+      });
+
+      if (error) throw error;
+      return data.results || [];
+    },
+    enabled: search.length > 1
   });
 
   const filteredResults = selectedType === 'all' 
@@ -125,8 +96,8 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               placeholder="Search candidates, companies, jobs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
               autoFocus
             />
@@ -149,13 +120,13 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
 
           {/* Results */}
           <div className="max-h-96 overflow-y-auto space-y-2">
-            {isLoading && searchTerm && (
+            {isLoading && search && (
               <div className="text-center py-4 text-gray-500">Searching...</div>
             )}
             
-            {!isLoading && searchTerm && filteredResults.length === 0 && (
+            {!isLoading && search && filteredResults.length === 0 && (
               <div className="text-center py-4 text-gray-500">
-                No results found for "{searchTerm}"
+                No results found for "{search}"
               </div>
             )}
             
