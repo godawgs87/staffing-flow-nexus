@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Mail, User } from 'lucide-react';
-import NotesPanel from './notes/NotesPanel';
+import CandidateDetails from './CandidateDetails';
 import CandidateModal from './modals/CandidateModal';
 import { useCandidates } from '@/hooks/useCandidates';
 
@@ -195,19 +195,18 @@ const Candidates = () => {
           </div>
         </div>
 
-        {/* Notes Panel */}
+        {/* Details Panel */}
         <div className="lg:col-span-1">
           {selectedCandidate ? (
-            <NotesPanel
-              entityType="candidate"
-              entityId={selectedCandidate.id}
-              entityName={`${selectedCandidate.first_name} ${selectedCandidate.last_name}`}
+            <CandidateDetails
+              candidate={selectedCandidate}
+              onEdit={() => openModal('edit', selectedCandidate)}
             />
           ) : (
             <Card>
               <CardContent className="p-6 text-center text-gray-500">
                 <User className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>Select a candidate to view and add notes</p>
+                <p>Select a candidate to view full details</p>
               </CardContent>
             </Card>
           )}

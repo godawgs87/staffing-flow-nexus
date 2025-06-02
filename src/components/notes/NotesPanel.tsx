@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import NoteForm from './NoteForm';
 import NoteItem from './NoteItem';
 
@@ -35,6 +34,7 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
   const queryClient = useQueryClient();
 
   const fetchNotes = async (): Promise<Note[]> => {
+    console.log('Fetching notes for:', { entityType, entityId });
     const { data, error } = await supabase
       .from('notes')
       .select('*')
@@ -42,7 +42,11 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
       .eq('entity_id', entityId)
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error fetching notes:', error);
+      throw error;
+    }
+    console.log('Notes fetched:', data);
     return data || [];
   };
 
@@ -56,6 +60,7 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
       // For now, use a dummy author_id since we don't have auth yet
       const dummyUserId = '00000000-0000-0000-0000-000000000000';
 
+      console.log('Adding note:', { content, entityType, entityId });
       const { data, error } = await supabase
         .from('notes')
         .insert({
@@ -71,17 +76,22 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
         console.error('Error adding note:', error);
         throw error;
       }
+      console.log('Note added successfully:', data);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes', entityType, entityId] });
       setNewNote('');
       setIsAdding(false);
+    },
+    onError: (error) => {
+      console.error('Add note mutation error:', error);
     }
   });
 
   const updateNoteMutation = useMutation({
     mutationFn: async ({ id, content }: { id: string; content: string }) => {
+      console.log('Updating note:', { id, content });
       const { data, error } = await supabase
         .from('notes')
         .update({ content })
@@ -93,17 +103,22 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
         console.error('Error updating note:', error);
         throw error;
       }
+      console.log('Note updated successfully:', data);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes', entityType, entityId] });
       setEditingId(null);
       setEditContent('');
+    },
+    onError: (error) => {
+      console.error('Update note mutation error:', error);
     }
   });
 
   const deleteNoteMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log('Deleting note:', id);
       const { error } = await supabase
         .from('notes')
         .delete()
@@ -113,10 +128,14 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
         console.error('Error deleting note:', error);
         throw error;
       }
+      console.log('Note deleted successfully');
       return id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes', entityType, entityId] });
+    },
+    onError: (error) => {
+      console.error('Delete note mutation error:', error);
     }
   });
 

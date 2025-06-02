@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Building2, Users, MapPin, Globe } from 'lucide-react';
-import NotesPanel from './notes/NotesPanel';
+import CompanyDetails from './CompanyDetails';
 import CompanyModal from './modals/CompanyModal';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useJobs } from '@/hooks/useJobs';
@@ -214,19 +214,19 @@ const Companies = () => {
           </div>
         </div>
 
-        {/* Notes Panel */}
+        {/* Details Panel */}
         <div className="lg:col-span-1">
           {selectedCompany ? (
-            <NotesPanel
-              entityType="company"
-              entityId={selectedCompany.id}
-              entityName={selectedCompany.name}
+            <CompanyDetails
+              company={selectedCompany}
+              onEdit={() => openModal('edit', selectedCompany)}
+              stats={getCompanyStats(selectedCompany.id)}
             />
           ) : (
             <Card>
               <CardContent className="p-6 text-center text-gray-500">
                 <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>Select a company to view and add notes</p>
+                <p>Select a company to view full details</p>
               </CardContent>
             </Card>
           )}

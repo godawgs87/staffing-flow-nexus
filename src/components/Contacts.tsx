@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Mail, Phone, Building2, User } from 'lucide-react';
-import NotesPanel from './notes/NotesPanel';
+import ContactDetails from './ContactDetails';
 import ContactModal from './modals/ContactModal';
 import { useContacts } from '@/hooks/useContacts';
 
@@ -173,19 +173,18 @@ const Contacts = () => {
           </div>
         </div>
 
-        {/* Notes Panel */}
+        {/* Details Panel */}
         <div className="lg:col-span-1">
           {selectedContact ? (
-            <NotesPanel
-              entityType="contact"
-              entityId={selectedContact.id}
-              entityName={`${selectedContact.first_name} ${selectedContact.last_name}`}
+            <ContactDetails
+              contact={selectedContact}
+              onEdit={() => openModal('edit', selectedContact)}
             />
           ) : (
             <Card>
               <CardContent className="p-6 text-center text-gray-500">
                 <User className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>Select a contact to view and add notes</p>
+                <p>Select a contact to view full details</p>
               </CardContent>
             </Card>
           )}
