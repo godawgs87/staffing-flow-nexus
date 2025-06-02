@@ -1,4 +1,5 @@
 
+
 import { createClient } from '@supabase/supabase-js'
 
 // Log the environment variables for debugging
@@ -192,3 +193,4 @@ export interface Database {
     }
   }
 }
+
