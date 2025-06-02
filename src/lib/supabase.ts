@@ -1,14 +1,32 @@
 
 import { createClient } from '@supabase/supabase-js'
 
+// Log the environment variables for debugging
+console.log('Environment check:', {
+  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Present' : 'Missing',
+  NODE_ENV: import.meta.env.MODE
+});
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+  console.error('Supabase configuration missing:', {
+    url: supabaseUrl ? 'Present' : 'Missing',
+    key: supabaseAnonKey ? 'Present' : 'Missing'
+  });
+  
+  // Create a mock client for development to prevent the app from crashing
+  console.warn('Creating mock Supabase client - features will not work until proper configuration is set');
+  
+  export const supabase = createClient(
+    'https://placeholder.supabase.co', 
+    'placeholder-key'
+  );
+} else {
+  export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 }
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Database types
 export interface Database {
