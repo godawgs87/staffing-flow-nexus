@@ -15,6 +15,7 @@ interface Job {
   company_id?: string;
   contact_id?: string;
   description?: string;
+  requirements?: string;
   location?: string;
   job_type?: string;
   salary_min?: number;
@@ -35,6 +36,7 @@ const JobModal = ({ isOpen, onClose, job, mode }: JobModalProps) => {
     company_id: job?.company_id || '',
     contact_id: job?.contact_id || '',
     description: job?.description || '',
+    requirements: job?.requirements || '',
     location: job?.location || '',
     job_type: job?.job_type || 'full-time',
     salary_min: job?.salary_min?.toString() || '',
@@ -53,6 +55,7 @@ const JobModal = ({ isOpen, onClose, job, mode }: JobModalProps) => {
         ...data,
         salary_min: data.salary_min ? parseInt(data.salary_min) : null,
         salary_max: data.salary_max ? parseInt(data.salary_max) : null,
+        contact_id: data.contact_id || null,
       };
 
       if (mode === 'add') {
@@ -95,7 +98,7 @@ const JobModal = ({ isOpen, onClose, job, mode }: JobModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {mode === 'add' ? 'Post New Job' : mode === 'edit' ? 'Edit Job' : 'Job Details'}

@@ -10,6 +10,7 @@ interface JobFormData {
   company_id: string;
   contact_id: string;
   description: string;
+  requirements: string;
   location: string;
   job_type: string;
   salary_min: string;
@@ -46,6 +47,7 @@ const JobForm = ({ formData, companies, contacts, isReadonly, onChange }: JobFor
           value={formData.title}
           onChange={(e) => onChange('title', e.target.value)}
           readOnly={isReadonly}
+          placeholder="e.g. Senior Software Engineer"
           required
         />
       </div>
@@ -67,12 +69,13 @@ const JobForm = ({ formData, companies, contacts, isReadonly, onChange }: JobFor
       </div>
       
       <div>
-        <Label htmlFor="contact">Contact</Label>
+        <Label htmlFor="contact">Contact Person</Label>
         <Select value={formData.contact_id} onValueChange={(value) => onChange('contact_id', value)} disabled={isReadonly}>
           <SelectTrigger>
-            <SelectValue placeholder="Select contact" />
+            <SelectValue placeholder="Select contact (optional)" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="">No contact selected</SelectItem>
             {contacts.map((contact) => (
               <SelectItem key={contact.id} value={contact.id}>
                 {contact.first_name} {contact.last_name}
@@ -83,23 +86,13 @@ const JobForm = ({ formData, companies, contacts, isReadonly, onChange }: JobFor
       </div>
       
       <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => onChange('description', e.target.value)}
-          readOnly={isReadonly}
-          rows={4}
-        />
-      </div>
-      
-      <div>
         <Label htmlFor="location">Location</Label>
         <Input
           id="location"
           value={formData.location}
           onChange={(e) => onChange('location', e.target.value)}
           readOnly={isReadonly}
+          placeholder="e.g. New York, NY or Remote"
         />
       </div>
       
@@ -114,6 +107,8 @@ const JobForm = ({ formData, companies, contacts, isReadonly, onChange }: JobFor
               <SelectItem value="full-time">Full-time</SelectItem>
               <SelectItem value="part-time">Part-time</SelectItem>
               <SelectItem value="contract">Contract</SelectItem>
+              <SelectItem value="internship">Internship</SelectItem>
+              <SelectItem value="freelance">Freelance</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -159,6 +154,30 @@ const JobForm = ({ formData, companies, contacts, isReadonly, onChange }: JobFor
             placeholder="80000"
           />
         </div>
+      </div>
+      
+      <div>
+        <Label htmlFor="description">Job Description</Label>
+        <Textarea
+          id="description"
+          value={formData.description}
+          onChange={(e) => onChange('description', e.target.value)}
+          readOnly={isReadonly}
+          rows={4}
+          placeholder="Describe the role, responsibilities, and what the candidate will be doing..."
+        />
+      </div>
+      
+      <div>
+        <Label htmlFor="requirements">Requirements</Label>
+        <Textarea
+          id="requirements"
+          value={formData.requirements}
+          onChange={(e) => onChange('requirements', e.target.value)}
+          readOnly={isReadonly}
+          rows={4}
+          placeholder="List the required skills, experience, education, and qualifications..."
+        />
       </div>
     </div>
   );
