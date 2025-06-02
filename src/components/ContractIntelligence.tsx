@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   FileText, 
@@ -16,6 +15,8 @@ import {
   Download,
   Zap
 } from 'lucide-react';
+import ContractUpload from './contracts/ContractUpload';
+import { ContractAnalysis } from '@/services/aiService';
 
 const ContractIntelligence = () => {
   const [contracts, setContracts] = useState([
@@ -52,6 +53,8 @@ const ContractIntelligence = () => {
       estimatedTime: '2-3 days'
     }
   ]);
+  const [activeTab, setActiveTab] = useState('contracts');
+  const [showUpload, setShowUpload] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -62,6 +65,28 @@ const ContractIntelligence = () => {
     }
   };
 
+  const handleAnalysisComplete = (analysis: ContractAnalysis) => {
+    const newContract = {
+      id: contracts.length + 1,
+      name: 'New Contract ' + (contracts.length + 1),
+      status: 'processed',
+      uploadDate: new Date().toISOString().split('T')[0],
+      aiConfidence: analysis.confidence,
+      extractedRequirements: {
+        insurance: analysis.extractedRequirements.insurance,
+        compliance: analysis.extractedRequirements.compliance,
+        location: analysis.extractedRequirements.location,
+        training: analysis.extractedRequirements.training,
+        roles: analysis.extractedRequirements.roles
+      },
+      onboardingSteps: analysis.workflowSteps.length,
+      estimatedTime: `${analysis.workflowSteps.reduce((sum, step) => sum + step.estimatedDays, 0)} days`
+    };
+
+    setContracts([newContract, ...contracts]);
+    setShowUpload(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -69,11 +94,18 @@ const ContractIntelligence = () => {
           <h1 className="text-2xl font-bold text-gray-900">Contract Intelligence</h1>
           <p className="text-gray-600">AI-powered contract parsing and onboarding automation</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button 
+          className="bg-blue-600 hover:bg-blue-700"
+          onClick={() => setShowUpload(!showUpload)}
+        >
           <Upload className="h-4 w-4 mr-2" />
-          Upload Contract
+          {showUpload ? 'Hide Upload Form' : 'Upload Contract'}
         </Button>
       </div>
+
+      {showUpload && (
+        <ContractUpload onAnalysisComplete={handleAnalysisComplete} />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
@@ -81,7 +113,7 @@ const ContractIntelligence = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Contracts Processed</p>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-2xl font-bold">{contracts.length}</p>
               </div>
               <Brain className="h-8 w-8 text-blue-600" />
             </div>
@@ -92,7 +124,11 @@ const ContractIntelligence = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Avg AI Confidence</p>
-                <p className="text-2xl font-bold">92%</p>
+                <p className="text-2xl font-bold">
+                  {Math.round(
+                    contracts.reduce((sum, contract) => sum + contract.aiConfidence, 0) / contracts.length
+                  )}%
+                </p>
               </div>
               <Zap className="h-8 w-8 text-green-600" />
             </div>
@@ -115,7 +151,9 @@ const ContractIntelligence = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Auto-Generated Workflows</p>
-                <p className="text-2xl font-bold">18</p>
+                <p className="text-2xl font-bold">
+                  {contracts.reduce((sum, contract) => sum + contract.onboardingSteps, 0)}
+                </p>
               </div>
               <CheckCircle className="h-8 w-8 text-yellow-600" />
             </div>
@@ -123,7 +161,12 @@ const ContractIntelligence = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="contracts" className="space-y-4">
+      <Tabs 
+        defaultValue="contracts" 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList>
           <TabsTrigger value="contracts">Contract Analysis</TabsTrigger>
           <TabsTrigger value="requirements">Requirement Library</TabsTrigger>
@@ -152,7 +195,14 @@ const ContractIntelligence = () => {
                     <div className="text-sm text-gray-600 mb-2">
                       Processing: {contract.aiConfidence}%
                     </div>
-                    <Progress value={contract.aiConfidence} className="w-32" />
+                    <Badge className={
+                      contract.aiConfidence > 90 ? 'bg-green-100 text-green-800' :
+                      contract.aiConfidence > 80 ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }>
+                      {contract.aiConfidence > 90 ? 'High Confidence' : 
+                       contract.aiConfidence > 80 ? 'Medium Confidence' : 'Low Confidence'}
+                    </Badge>
                   </div>
                 </div>
 
