@@ -91,7 +91,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex w-full">
+    <div className="h-screen bg-gray-50 flex w-full overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {isMobile && sidebarOpen && (
         <div 
@@ -109,7 +109,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           : sidebarOpen 
             ? 'w-64' 
             : 'w-16'
-      } bg-white shadow-sm border-r min-h-screen transition-all duration-300 flex-shrink-0 flex flex-col`}>
+      } bg-white shadow-sm border-r h-full transition-all duration-300 flex-shrink-0 flex flex-col`}>
         
         {/* Fixed header section */}
         <div className="p-2 flex-shrink-0">
@@ -168,9 +168,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </nav>
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0 w-full">
+      <div className="flex-1 flex flex-col min-w-0 w-full h-full">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b flex-shrink-0">
+        <header className="bg-white shadow-sm border-b flex-shrink-0 z-10">
           <div className="flex items-center justify-between px-1 py-3">
             <div className="flex items-center space-x-4">
               <Button
@@ -226,11 +226,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </header>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-auto w-full bg-gray-50">
-          <div className="w-full h-full">
-            {children}
-          </div>
+        {/* Main Content - Now properly scrollable */}
+        <main className="flex-1 h-0 overflow-auto bg-gray-50">
+          {children}
         </main>
       </div>
 
