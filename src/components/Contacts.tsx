@@ -1,12 +1,11 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Search, Filter, Plus, Mail, Phone, Building2, User } from 'lucide-react';
 import ContactDetails from './ContactDetails';
 import ContactModal from './modals/ContactModal';
+import ContactListHeader from './contacts/ContactListHeader';
+import ContactSearchBar from './contacts/ContactSearchBar';
+import ContactListItem from './contacts/ContactListItem';
+import ContactEmptyState from './contacts/ContactEmptyState';
 import { useContacts } from '@/hooks/useContacts';
 
 const Contacts = () => {
@@ -35,15 +34,6 @@ const Contacts = () => {
 
   const closeModal = () => {
     setModalState({ isOpen: false, mode: 'add' });
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'client': return 'bg-blue-100 text-blue-800';
-      case 'partner': return 'bg-green-100 text-green-800';
-      case 'vendor': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
   };
 
   if (isLoading) {
@@ -77,99 +67,28 @@ const Contacts = () => {
       {/* Main Content - Left Side */}
       <div className="flex-1 p-6 space-y-6 overflow-auto">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
-            <p className="text-gray-600">Manage your business contacts and relationships ({contacts.length} total)</p>
-          </div>
-          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Contact
-          </Button>
-        </div>
+        <ContactListHeader 
+          totalCount={contacts.length} 
+          onAddContact={() => openModal('add')} 
+        />
 
         {/* Search and Filters */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex space-x-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search contacts by name, company, or title..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <ContactSearchBar 
+          searchTerm={searchTerm} 
+          onSearchChange={setSearchTerm} 
+        />
 
         {/* Contacts List */}
         <div className="space-y-4">
           {filteredContacts.map((contact) => (
-            <Card 
-              key={contact.id} 
-              className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
-                selectedContact?.id === contact.id ? 'ring-2 ring-blue-500' : ''
-              }`}
-              onClick={() => setSelectedContact(contact)}
-            >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <User className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="text-lg font-medium">{contact.first_name} {contact.last_name}</h3>
-                        <Badge className={getTypeColor(contact.contact_type)}>
-                          {contact.contact_type}
-                        </Badge>
-                      </div>
-                      <p className="text-gray-600">{contact.title || 'No title specified'}</p>
-                      <div className="flex items-center space-x-1 text-gray-600 mt-1">
-                        <Building2 className="h-4 w-4" />
-                        <span>{contact.companies?.name || 'No company'}</span>
-                      </div>
-                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                        {contact.email && (
-                          <div className="flex items-center space-x-1">
-                            <Mail className="h-4 w-4" />
-                            <span>{contact.email}</span>
-                          </div>
-                        )}
-                        {contact.phone && (
-                          <div className="flex items-center space-x-1">
-                            <Phone className="h-4 w-4" />
-                            <span>{contact.phone}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex space-x-1">
-                    <Button size="sm" variant="ghost" onClick={(e) => {
-                      e.stopPropagation();
-                      openModal('view', contact);
-                    }}>
-                      View
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={(e) => {
-                      e.stopPropagation();
-                      openModal('edit', contact);
-                    }}>
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ContactListItem
+              key={contact.id}
+              contact={contact}
+              isSelected={selectedContact?.id === contact.id}
+              onSelect={setSelectedContact}
+              onView={(contact) => openModal('view', contact)}
+              onEdit={(contact) => openModal('edit', contact)}
+            />
           ))}
         </div>
       </div>
@@ -182,10 +101,7 @@ const Contacts = () => {
             onEdit={() => openModal('edit', selectedContact)}
           />
         ) : (
-          <div className="p-6 text-center text-gray-500 h-full flex flex-col justify-center">
-            <User className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>Select a contact to view full details</p>
-          </div>
+          <ContactEmptyState />
         )}
       </div>
 
