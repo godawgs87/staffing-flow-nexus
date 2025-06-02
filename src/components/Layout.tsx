@@ -99,8 +99,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           : sidebarOpen 
             ? 'w-64' 
             : 'w-16'
-      } bg-white shadow-sm border-r min-h-screen transition-all duration-300 flex-shrink-0`}>
-        <div className="p-2">
+      } bg-white shadow-sm border-r min-h-screen transition-all duration-300 flex-shrink-0 flex flex-col`}>
+        
+        {/* Fixed header section */}
+        <div className="p-2 flex-shrink-0">
           {/* Mobile close button */}
           {isMobile && (
             <div className="flex justify-end mb-2">
@@ -117,7 +119,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </div>
             {(sidebarOpen || isMobile) && <h1 className="text-xl font-bold text-gray-900">TalentFlow</h1>}
           </div>
+        </div>
 
+        {/* Scrollable navigation section */}
+        <div className="flex-1 overflow-y-auto px-2 pb-4">
           {/* Navigation groups */}
           {navigationGroups.map((group) => (
             <div key={group.title} className="mb-4">
@@ -199,7 +204,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </header>
 
-        {/* Main Content - removed all padding */}
+        {/* Main Content */}
         <main className="flex-1 overflow-auto w-full bg-gray-50">
           <div className="w-full h-full">
             {children}
