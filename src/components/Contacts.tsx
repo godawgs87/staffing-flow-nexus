@@ -49,7 +49,7 @@ const Contacts = () => {
 
   if (isLoading) {
     return (
-      <div className="p-2 md:p-4 space-y-4">
+      <div className="p-3 space-y-3">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
@@ -62,7 +62,7 @@ const Contacts = () => {
 
   if (error) {
     return (
-      <div className="p-2 md:p-4 space-y-4">
+      <div className="p-3 space-y-3">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
@@ -84,7 +84,7 @@ const Contacts = () => {
   return (
     <div className="flex h-full w-full">
       {/* Main Content */}
-      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-2 md:p-4 space-y-4 overflow-auto`}>
+      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-3 space-y-3 overflow-auto`}>
         <ContactListHeader 
           totalCount={contacts.length} 
           onAddContact={() => openModal('add')} 

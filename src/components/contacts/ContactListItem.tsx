@@ -38,39 +38,39 @@ const ContactListItem = ({ contact, isSelected, onSelect, onView, onEdit }: Cont
 
   return (
     <Card 
-      className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
+      className={`hover:shadow-md transition-all duration-200 cursor-pointer ${
         isSelected ? 'ring-2 ring-blue-500' : ''
       }`}
       onClick={() => onSelect(contact)}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-4">
         <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <User className="h-6 w-6 text-blue-600" />
+          <div className="flex items-start space-x-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <User className="h-5 w-5 text-blue-600" />
             </div>
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-1">
-                <h3 className="text-lg font-medium">{contact.first_name} {contact.last_name}</h3>
-                <Badge className={getTypeColor(contact.contact_type)}>
+                <h3 className="text-base font-medium">{contact.first_name} {contact.last_name}</h3>
+                <Badge className={`${getTypeColor(contact.contact_type)} text-xs`}>
                   {contact.contact_type}
                 </Badge>
               </div>
-              <p className="text-gray-600">{contact.title || 'No title specified'}</p>
-              <div className="flex items-center space-x-1 text-gray-600 mt-1">
-                <Building2 className="h-4 w-4" />
-                <span>{contact.companies?.name || 'No company'}</span>
+              <p className="text-sm text-gray-600 mb-1">{contact.title || 'No title specified'}</p>
+              <div className="flex items-center space-x-1 text-gray-600 mb-2">
+                <Building2 className="h-3 w-3" />
+                <span className="text-sm">{contact.companies?.name || 'No company'}</span>
               </div>
-              <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+              <div className="flex items-center space-x-4 text-xs text-gray-500">
                 {contact.email && (
                   <div className="flex items-center space-x-1">
-                    <Mail className="h-4 w-4" />
+                    <Mail className="h-3 w-3" />
                     <span>{contact.email}</span>
                   </div>
                 )}
                 {contact.phone && (
                   <div className="flex items-center space-x-1">
-                    <Phone className="h-4 w-4" />
+                    <Phone className="h-3 w-3" />
                     <span>{contact.phone}</span>
                   </div>
                 )}

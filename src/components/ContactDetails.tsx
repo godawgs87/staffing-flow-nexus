@@ -17,10 +17,10 @@ const ContactDetails = ({ contact, onEdit, onClose }: ContactDetailsProps) => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-3 p-3">
       {/* Mobile Close Button */}
       {isMobile && onClose && (
-        <div className="flex justify-end p-2 pb-0">
+        <div className="flex justify-end">
           <Button onClick={onClose} size="sm" variant="ghost">
             <X className="h-4 w-4" />
           </Button>

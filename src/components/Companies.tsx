@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import CompanyDetails from './CompanyDetails';
 import CompanyModal from './modals/CompanyModal';
@@ -83,7 +84,7 @@ const Companies = () => {
 
   if (isLoading) {
     return (
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-3 space-y-3">
         <CompanyListHeader totalCount={0} onAddCompany={() => openModal('add')} />
         <p className="text-gray-600">Loading companies...</p>
       </div>
@@ -92,7 +93,7 @@ const Companies = () => {
 
   if (error) {
     return (
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-3 space-y-3">
         <CompanyListHeader totalCount={0} onAddCompany={() => openModal('add')} />
         <p className="text-red-600">Error loading companies: {error.message}</p>
       </div>
@@ -111,7 +112,7 @@ const Companies = () => {
   return (
     <div className="flex h-full w-full">
       {/* Main Content */}
-      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-4 md:p-6 space-y-6 overflow-auto`}>
+      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-3 space-y-3 overflow-auto`}>
         <CompanyListHeader 
           totalCount={companies.length} 
           onAddCompany={() => openModal('add')} 
@@ -123,7 +124,7 @@ const Companies = () => {
         />
 
         {/* Companies List */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           {filteredCompanies.map((company) => {
             const stats = getCompanyStats(company.id);
             
