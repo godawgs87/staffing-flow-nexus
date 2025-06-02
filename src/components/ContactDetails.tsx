@@ -21,9 +21,9 @@ const ContactDetails = ({ contact, onEdit }: ContactDetailsProps) => {
   };
 
   return (
-    <div className="w-full space-y-8">
-      {/* Header Section */}
-      <div className="bg-white rounded-lg shadow-sm border p-8">
+    <div className="h-full w-full space-y-8">
+      {/* Header Section - Full width */}
+      <div className="bg-white rounded-lg shadow-sm border p-8 w-full">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-6">
             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
@@ -43,8 +43,8 @@ const ContactDetails = ({ contact, onEdit }: ContactDetailsProps) => {
           </Button>
         </div>
 
-        {/* Contact Information Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+        {/* Contact Information Grid - Full width utilization */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 w-full">
           {contact.email && (
             <div className="flex items-center space-x-4">
               <Mail className="h-6 w-6 text-gray-400" />
@@ -84,12 +84,14 @@ const ContactDetails = ({ contact, onEdit }: ContactDetailsProps) => {
         </div>
       </div>
 
-      {/* Notes Section */}
-      <NotesPanel
-        entityType="contact"
-        entityId={contact.id}
-        entityName={`${contact.first_name} ${contact.last_name}`}
-      />
+      {/* Notes Section - Full width */}
+      <div className="w-full">
+        <NotesPanel
+          entityType="contact"
+          entityId={contact.id}
+          entityName={`${contact.first_name} ${contact.last_name}`}
+        />
+      </div>
     </div>
   );
 };

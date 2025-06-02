@@ -78,94 +78,97 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden"
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Users className="h-5 w-5 text-white" />
-              </div>
-              <h1 className="text-xl font-bold text-gray-900">TalentFlow</h1>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <nav className={`${
+        sidebarOpen ? 'w-64' : 'w-16'
+      } bg-white shadow-sm border-r min-h-screen transition-all duration-300 flex-shrink-0`}>
+        <div className="p-3">
+          {/* Logo and title */}
+          <div className="flex items-center space-x-3 mb-6 px-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Users className="h-5 w-5 text-white" />
             </div>
+            {sidebarOpen && <h1 className="text-xl font-bold text-gray-900">TalentFlow</h1>}
           </div>
 
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setSearchOpen(true)}
-              className="w-64 justify-start text-gray-500"
-            >
-              <SearchIcon className="h-4 w-4 mr-2" />
-              Search candidates, companies...
-            </Button>
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="h-5 w-5" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500">
-                3
-              </Badge>
-            </Button>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">{user?.email}</span>
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-5 w-5" />
+          {/* Navigation groups */}
+          {navigationGroups.map((group) => (
+            <div key={group.title} className="mb-6">
+              {sidebarOpen && (
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+                  {group.title}
+                </h3>
+              )}
+              <ul className="space-y-1">
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.name}>
+                      <Link
+                        to={item.href}
+                        className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          isActive(item.href)
+                            ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        }`}
+                      >
+                        <Icon className="h-5 w-5 flex-shrink-0" />
+                        {sidebarOpen && <span className="ml-3 text-left">{item.name}</span>}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </nav>
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b flex-shrink-0">
+          <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              >
+                <Menu className="h-5 w-5" />
               </Button>
             </div>
-          </div>
-        </div>
-      </header>
 
-      <div className="flex">
-        {/* Sidebar */}
-        <nav className={`${
-          sidebarOpen ? 'w-64' : 'w-16'
-        } bg-white shadow-sm border-r min-h-screen transition-all duration-300`}>
-          <div className="p-4">
-            {navigationGroups.map((group) => (
-              <div key={group.title} className="mb-6">
-                {sidebarOpen && (
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">
-                    {group.title}
-                  </h3>
-                )}
-                <ul className="space-y-1">
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <li key={item.name}>
-                        <Link
-                          to={item.href}
-                          className={`flex items-center px-2 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            isActive(item.href)
-                              ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
-                              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                          }`}
-                        >
-                          <Icon className="h-5 w-5 flex-shrink-0" />
-                          {sidebarOpen && <span className="ml-3">{item.name}</span>}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setSearchOpen(true)}
+                className="w-64 justify-start text-gray-500"
+              >
+                <SearchIcon className="h-4 w-4 mr-2" />
+                Search candidates, companies...
+              </Button>
+              <Button variant="ghost" size="sm" className="relative">
+                <Bell className="h-5 w-5" />
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500">
+                  3
+                </Badge>
+              </Button>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">{user?.email}</span>
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                  <LogOut className="h-5 w-5" />
+                </Button>
               </div>
-            ))}
+            </div>
           </div>
-        </nav>
+        </header>
 
-        {/* Main Content - Optimized for wider screens */}
-        <main className="flex-1 p-6 min-w-0">
-          <div className="w-full max-w-none">
+        {/* Main Content - Full width utilization */}
+        <main className="flex-1 p-6 overflow-auto">
+          <div className="h-full w-full">
             {children}
           </div>
         </main>

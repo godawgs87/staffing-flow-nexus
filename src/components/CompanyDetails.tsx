@@ -17,9 +17,9 @@ interface CompanyDetailsProps {
 
 const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
   return (
-    <div className="w-full space-y-8">
-      {/* Header Section */}
-      <div className="bg-white rounded-lg shadow-sm border p-8">
+    <div className="h-full w-full space-y-8">
+      {/* Header Section - Full width */}
+      <div className="bg-white rounded-lg shadow-sm border p-8 w-full">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-6">
             <div className="w-20 h-20 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -36,8 +36,8 @@ const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
           </Button>
         </div>
 
-        {/* Company Information Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        {/* Company Information Grid - Full width utilization */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 w-full">
           <div className="flex items-center space-x-4">
             <Users className="h-6 w-6 text-gray-400" />
             <div>
@@ -65,11 +65,11 @@ const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
           )}
         </div>
 
-        {/* Stats */}
+        {/* Stats - Full width */}
         {stats && (
-          <div className="mt-8 pt-8 border-t">
+          <div className="mt-8 pt-8 border-t w-full">
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Company Stats</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <div className="text-3xl font-bold text-blue-600">{stats.activeJobs}</div>
                 <div className="text-sm text-gray-600 font-medium">Active Jobs</div>
@@ -90,21 +90,23 @@ const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
           </div>
         )}
 
-        {/* Description */}
+        {/* Description - Full width */}
         {company.description && (
-          <div className="mt-8 pt-8 border-t">
+          <div className="mt-8 pt-8 border-t w-full">
             <h3 className="text-lg font-semibold text-gray-700 mb-3">Description</h3>
             <p className="text-gray-700 leading-relaxed">{company.description}</p>
           </div>
         )}
       </div>
 
-      {/* Notes Section */}
-      <NotesPanel
-        entityType="company"
-        entityId={company.id}
-        entityName={company.name}
-      />
+      {/* Notes Section - Full width */}
+      <div className="w-full">
+        <NotesPanel
+          entityType="company"
+          entityId={company.id}
+          entityName={company.name}
+        />
+      </div>
     </div>
   );
 };

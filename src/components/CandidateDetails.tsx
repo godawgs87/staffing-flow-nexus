@@ -24,9 +24,9 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Section */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
+    <div className="h-full w-full space-y-6">
+      {/* Header Section - Full width */}
+      <div className="bg-white rounded-lg shadow-sm border p-6 w-full">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
@@ -46,8 +46,8 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
           </Button>
         </div>
 
-        {/* Information Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Information Grid - Full width utilization */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 w-full">
           {candidate.email && (
             <div className="flex items-center space-x-3">
               <Mail className="h-5 w-5 text-gray-400" />
@@ -118,9 +118,9 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
           )}
         </div>
 
-        {/* Skills Section */}
+        {/* Skills Section - Full width */}
         {candidate.skills && candidate.skills.length > 0 && (
-          <div className="mt-6">
+          <div className="mt-6 w-full">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Skills</h3>
             <div className="flex flex-wrap gap-2">
               {candidate.skills.map((skill: string, index: number) => (
@@ -133,12 +133,14 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
         )}
       </div>
 
-      {/* Notes Section */}
-      <NotesPanel
-        entityType="candidate"
-        entityId={candidate.id}
-        entityName={`${candidate.first_name} ${candidate.last_name}`}
-      />
+      {/* Notes Section - Full width */}
+      <div className="w-full">
+        <NotesPanel
+          entityType="candidate"
+          entityId={candidate.id}
+          entityName={`${candidate.first_name} ${candidate.last_name}`}
+        />
+      </div>
     </div>
   );
 };
