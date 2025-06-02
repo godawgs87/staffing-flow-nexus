@@ -12,9 +12,9 @@ interface CandidateSearchBarProps {
 
 const CandidateSearchBar = ({ searchTerm, onSearchChange }: CandidateSearchBarProps) => {
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex space-x-4">
+    <Card className="mx-0">
+      <CardContent className="p-3">
+        <div className="flex space-x-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
@@ -24,8 +24,8 @@ const CandidateSearchBar = ({ searchTerm, onSearchChange }: CandidateSearchBarPr
               className="pl-10"
             />
           </div>
-          <Button variant="outline">
-            <Filter className="h-4 w-4 mr-2" />
+          <Button variant="outline" size="sm">
+            <Filter className="h-4 w-4 mr-1" />
             Filters
           </Button>
         </div>

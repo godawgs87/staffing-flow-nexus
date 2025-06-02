@@ -55,8 +55,8 @@ const Candidates = () => {
 
   if (isLoading) {
     return (
-      <div className="p-2 md:p-4 space-y-4">
-        <div className="flex justify-between items-center">
+      <div className="space-y-4">
+        <div className="flex justify-between items-center px-1">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
             <p className="text-gray-600">Loading candidates...</p>
@@ -68,8 +68,8 @@ const Candidates = () => {
 
   if (error) {
     return (
-      <div className="p-2 md:p-4 space-y-4">
-        <div className="flex justify-between items-center">
+      <div className="space-y-4">
+        <div className="flex justify-between items-center px-1">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
             <p className="text-red-600">Error loading candidates: {error.message}</p>
@@ -89,20 +89,24 @@ const Candidates = () => {
 
   return (
     <div className="flex h-full w-full">
-      {/* Main Content */}
-      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-2 md:p-4 space-y-4 overflow-auto`}>
-        <CandidateListHeader 
-          totalCount={candidates.length}
-          onAddCandidate={() => openModal('add')}
-        />
+      {/* Main Content - removed padding */}
+      <div className={`${isMobile ? 'w-full' : 'flex-1'} space-y-4 overflow-auto`}>
+        <div className="px-1">
+          <CandidateListHeader 
+            totalCount={candidates.length}
+            onAddCandidate={() => openModal('add')}
+          />
+        </div>
 
-        <CandidateSearchBar 
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+        <div className="px-1">
+          <CandidateSearchBar 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+        </div>
 
-        {/* Candidates List */}
-        <div className="space-y-2">
+        {/* Candidates List - removed padding */}
+        <div className="space-y-2 px-1">
           {filteredCandidates.map((candidate) => (
             <CandidateListItem
               key={candidate.id}

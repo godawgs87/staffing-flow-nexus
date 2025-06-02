@@ -28,60 +28,54 @@ const CandidateListItem = ({ candidate, isSelected, onSelect, onView, onEdit }: 
 
   return (
     <Card 
-      className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
+      className={`hover:shadow-lg transition-all duration-200 cursor-pointer mx-0 ${
         isSelected ? 'ring-2 ring-blue-500' : ''
       }`}
       onClick={() => onSelect(candidate)}
     >
-      <CardContent className="p-6">
+      <CardContent className="p-3">
         <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-4 flex-1">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <User className="h-6 w-6 text-blue-600" />
+          <div className="flex items-start space-x-3 flex-1">
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <User className="h-5 w-5 text-blue-600" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2 mb-1">
-                <h3 className="text-lg font-medium">{candidate.first_name} {candidate.last_name}</h3>
-                <Badge className={getStatusColor(candidate.status)}>
+                <h3 className="text-base font-medium truncate">{candidate.first_name} {candidate.last_name}</h3>
+                <Badge className={`${getStatusColor(candidate.status)} flex-shrink-0`}>
                   {candidate.status}
                 </Badge>
               </div>
-              <p className="text-gray-600 mb-2">{candidate.title || 'No title specified'}</p>
+              <p className="text-gray-600 mb-2 text-sm truncate">{candidate.title || 'No title specified'}</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">
+              <div className="grid grid-cols-1 gap-2 text-sm text-gray-500">
                 <div className="flex items-center space-x-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>{candidate.experience_years || 0} years exp</span>
+                  <Calendar className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate">{candidate.experience_years || 0} years exp</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <MapPin className="h-4 w-4" />
-                  <span>{candidate.location || 'Not specified'}</span>
+                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate">{candidate.location || 'Not specified'}</span>
                 </div>
                 {candidate.companies && (
                   <div className="flex items-center space-x-1">
-                    <Building2 className="h-4 w-4" />
-                    <span>{candidate.companies.name}</span>
-                  </div>
-                )}
-                {candidate.salary_expectation_min && candidate.salary_expectation_max && (
-                  <div className="flex items-center space-x-1">
-                    <DollarSign className="h-4 w-4" />
-                    <span>${candidate.salary_expectation_min?.toLocaleString()} - ${candidate.salary_expectation_max?.toLocaleString()}</span>
+                    <Building2 className="h-3 w-3 flex-shrink-0" />
+                    <span className="truncate">{candidate.companies.name}</span>
                   </div>
                 )}
               </div>
 
               {/* Skills */}
-              <div className="mt-3">
+              <div className="mt-2">
                 <div className="flex flex-wrap gap-1">
-                  {(candidate.skills || []).slice(0, 5).map((skill: string, index: number) => (
+                  {(candidate.skills || []).slice(0, 3).map((skill: string, index: number) => (
                     <Badge key={index} variant="secondary" className="text-xs">
                       {skill}
                     </Badge>
                   ))}
-                  {(candidate.skills || []).length > 5 && (
+                  {(candidate.skills || []).length > 3 && (
                     <Badge variant="secondary" className="text-xs">
-                      +{(candidate.skills || []).length - 5} more
+                      +{(candidate.skills || []).length - 3}
                     </Badge>
                   )}
                   {(!candidate.skills || candidate.skills.length === 0) && (
@@ -91,17 +85,17 @@ const CandidateListItem = ({ candidate, isSelected, onSelect, onView, onEdit }: 
               </div>
             </div>
           </div>
-          <div className="flex space-x-1">
+          <div className="flex flex-col space-y-1 ml-2">
             <Button size="sm" variant="ghost" onClick={(e) => {
               e.stopPropagation();
               onView(candidate);
-            }}>
+            }} className="text-xs h-7 px-2">
               View
             </Button>
             <Button size="sm" variant="ghost" onClick={(e) => {
               e.stopPropagation();
               onEdit(candidate);
-            }}>
+            }} className="text-xs h-7 px-2">
               Edit
             </Button>
           </div>

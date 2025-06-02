@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User, UserCheck, DollarSign, Shield, Brain, Building2, Contact, SearchIcon, LogOut, X } from 'lucide-react';
@@ -157,7 +156,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Header */}
         <header className="bg-white shadow-sm border-b flex-shrink-0">
-          <div className="flex items-center justify-between px-2 md:px-4 py-3">
+          <div className="flex items-center justify-between px-1 py-3">
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
@@ -200,7 +199,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </header>
 
-        {/* Main Content */}
+        {/* Main Content - removed all padding */}
         <main className="flex-1 overflow-auto w-full bg-gray-50">
           <div className="w-full h-full">
             {children}
