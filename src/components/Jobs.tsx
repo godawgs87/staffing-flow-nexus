@@ -1,231 +1,290 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Plus, MapPin, Clock, Users, Eye, Edit } from 'lucide-react';
-import JobModal from './modals/JobModal';
-import { useJobs } from '@/hooks/useJobs';
-import { useCandidates } from '@/hooks/useCandidates';
+import { Plus, Search, Edit, Trash2, Briefcase, Building2, MapPin, DollarSign, Calendar } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
+import JobModal from '@/components/modals/JobModal';
+
+interface Job {
+  id: string;
+  title: string;
+  company_id: string;
+  contact_id: string;
+  description: string;
+  location: string;
+  job_type: string;
+  salary_min: number;
+  salary_max: number;
+  status: string;
+  created_at: string;
+  companies?: { name: string };
+}
 
 const Jobs = () => {
-  const [modalState, setModalState] = useState<{
-    isOpen: boolean;
-    mode: 'add' | 'edit' | 'view';
-    job?: any;
-  }>({
-    isOpen: false,
-    mode: 'add',
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
+  const [selectedJob, setSelectedJob] = useState<Job | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: jobs = [], isLoading } = useQuery({
+    queryKey: ['jobs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select(`
+          *,
+          companies (
+            name
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as Job[];
+    },
   });
 
-  const { data: jobs = [], isLoading, error } = useJobs();
-  const { data: candidates = [] } = useCandidates();
+  const filteredJobs = React.useMemo(() => {
+    let filtered = jobs;
 
-  // Calculate application counts for each job (simulated for now since we don't have job_applications data)
-  const getJobStats = (jobId: string) => {
-    // For demo purposes, we'll simulate some applications
-    const applicationCount = Math.floor(Math.random() * 15) + 1;
-    const progress = Math.min((applicationCount / 10) * 100, 100);
-    return { applicationCount, progress };
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(job =>
+        job.title.toLowerCase().includes(term) ||
+        job.companies?.name?.toLowerCase().includes(term) ||
+        job.location?.toLowerCase().includes(term)
+      );
+    }
+
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(job => job.status === statusFilter);
+    }
+
+    return filtered;
+  }, [jobs, searchTerm, statusFilter]);
+
+  const handleViewJob = (job: Job) => {
+    setSelectedJob(job);
+    setModalMode('view');
+    setIsModalOpen(true);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open': return 'bg-green-100 text-green-800';
-      case 'filled': return 'bg-purple-100 text-purple-800';
-      case 'paused': return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const handleEditJob = (job: Job) => {
+    setSelectedJob(job);
+    setModalMode('edit');
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    try {
+      const { error } = await supabase
+        .from('jobs')
+        .delete()
+        .eq('id', jobId);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Invalidate the query to refetch jobs
+      queryClient.invalidateQueries({ queryKey: ['jobs'] });
+
+      toast({
+        title: 'Job Deleted',
+        description: 'Job posting has been successfully deleted.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: `Failed to delete job: ${error.message}`,
+        variant: 'destructive',
+      });
     }
   };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'full-time': return 'bg-blue-100 text-blue-800';
-      case 'contract': return 'bg-orange-100 text-orange-800';
-      case 'part-time': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const openModal = (mode: 'add' | 'edit' | 'view', job?: any) => {
-    setModalState({ isOpen: true, mode, job });
-  };
-
-  const closeModal = () => {
-    setModalState({ isOpen: false, mode: 'add' });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Job Openings</h1>
-            <p className="text-gray-600">Loading jobs...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Job Openings</h1>
-            <p className="text-red-600">Error loading jobs: {error.message}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Calculate total applications and interviews (simulated)
-  const totalApplications = jobs.reduce((sum) => sum + getJobStats('dummy').applicationCount, 0);
-  const totalInterviews = Math.floor(totalApplications * 0.3);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Job Openings</h1>
-          <p className="text-gray-600">Manage your open positions and requirements ({jobs.length} total)</p>
+    <div className="space-y-6 h-full overflow-auto">
+      {/* Header - Fixed at top */}
+      <div className="sticky top-0 bg-gray-50 z-10 pb-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Active Jobs</h1>
+            <p className="text-gray-600">Manage job postings and track applications</p>
+          </div>
+          <Button onClick={() => {
+            setSelectedJob(undefined);
+            setModalMode('add');
+            setIsModalOpen(true);
+          }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Post New Job
+          </Button>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
-          <Plus className="h-4 w-4 mr-2" />
-          Post New Job
-        </Button>
+
+        {/* Search and Filter Bar */}
+        <div className="flex space-x-4 mt-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search jobs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="paused">Paused</SelectItem>
+              <SelectItem value="filled">Filled</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{jobs.filter(job => job.status === 'open').length}</p>
-              <p className="text-sm text-gray-600">Active Jobs</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-green-600">{jobs.filter(job => job.status === 'filled').length}</p>
-              <p className="text-sm text-gray-600">Filled Jobs</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-purple-600">{totalApplications}</p>
-              <p className="text-sm text-gray-600">Total Applications</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-orange-600">{totalInterviews}</p>
-              <p className="text-sm text-gray-600">Interviews Scheduled</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Jobs List */}
-      <div className="space-y-4">
-        {jobs.map((job) => {
-          const stats = getJobStats(job.id);
-          
-          return (
-            <Card key={job.id} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-4">
+      {/* Jobs Grid - Scrollable */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
+        {isLoading ? (
+          <div className="col-span-full text-center py-8">
+            <div className="text-gray-500">Loading jobs...</div>
+          </div>
+        ) : filteredJobs.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
+            <p className="text-gray-600 mb-4">
+              {searchTerm || statusFilter !== 'all' 
+                ? 'Try adjusting your search or filters'
+                : 'Start by posting your first job'
+              }
+            </p>
+            <Button onClick={() => {
+              setSelectedJob(undefined);
+              setModalMode('add');
+              setIsModalOpen(true);
+            }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Post New Job
+            </Button>
+          </div>
+        ) : (
+          filteredJobs.map((job) => (
+            <Card 
+              key={job.id} 
+              className="cursor-pointer hover:shadow-md transition-all duration-200 border-l-4 border-l-blue-500"
+              onClick={() => handleViewJob(job)}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900">{job.title}</h3>
-                      <Badge className={getStatusColor(job.status)}>
-                        {job.status}
-                      </Badge>
-                      <Badge className={getTypeColor(job.job_type)}>
-                        {job.job_type}
-                      </Badge>
-                    </div>
-                    
-                    <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                      <span className="font-medium">{job.companies?.name || 'No company'}</span>
+                    <CardTitle className="text-lg mb-1">{job.title}</CardTitle>
+                    <div className="text-sm text-gray-600 space-y-1">
                       <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        {job.location || 'Location not specified'}
+                        <Building2 className="h-4 w-4 mr-1" />
+                        {job.companies?.name || 'No company'}
                       </div>
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {new Date(job.created_at).toLocaleDateString()}
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        {stats.applicationCount} applications
-                      </div>
-                    </div>
-                    
-                    <p className="text-gray-700 mb-4">{job.description || 'No description provided'}</p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        {job.salary_min && job.salary_max && (
-                          <span className="text-lg font-semibold text-green-600">
-                            ${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center space-x-4">
-                        <div className="text-right">
-                          <p className="text-sm text-gray-600">Progress: {Math.round(stats.progress)}%</p>
-                          <Progress value={stats.progress} className="w-32 h-2" />
+                      {job.location && (
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {job.location}
                         </div>
-                        
-                        <div className="flex space-x-2">
-                          <Button variant="outline" size="sm">
-                            View Applications
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => openModal('view', job)}
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            className="bg-blue-600 hover:bg-blue-700"
-                            onClick={() => openModal('edit', job)}
-                          >
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
-                          </Button>
-                        </div>
-                      </div>
+                      )}
                     </div>
+                  </div>
+                  <div className="flex space-x-1 ml-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditJob(job);
+                      }}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm('Are you sure you want to delete this job?')) {
+                          handleDeleteJob(job.id);
+                        }
+                      }}
+                      className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant={
+                      job.status === 'open' ? 'default' :
+                      job.status === 'draft' ? 'secondary' :
+                      job.status === 'paused' ? 'outline' :
+                      job.status === 'filled' ? 'default' : 'destructive'
+                    }>
+                      {job.status}
+                    </Badge>
+                    <Badge variant="outline">
+                      {job.job_type}
+                    </Badge>
+                  </div>
+                  
+                  {(job.salary_min || job.salary_max) && (
+                    <div className="text-sm text-gray-700 flex items-center">
+                      <DollarSign className="h-4 w-4 mr-1" />
+                      {job.salary_min && job.salary_max 
+                        ? `$${job.salary_min.toLocaleString()} - $${job.salary_max.toLocaleString()}`
+                        : job.salary_min 
+                        ? `$${job.salary_min.toLocaleString()}+`
+                        : `Up to $${job.salary_max?.toLocaleString()}`
+                      }
+                    </div>
+                  )}
+                  
+                  {job.description && (
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {job.description}
+                    </p>
+                  )}
+                  
+                  <div className="text-xs text-gray-500 flex items-center">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    Posted {new Date(job.created_at).toLocaleDateString()}
                   </div>
                 </div>
               </CardContent>
             </Card>
-          );
-        })}
+          ))
+        )}
       </div>
 
+      {/* Job Modal */}
       <JobModal
-        isOpen={modalState.isOpen}
-        onClose={closeModal}
-        job={modalState.job}
-        mode={modalState.mode}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        job={selectedJob}
+        mode={modalMode}
       />
     </div>
   );

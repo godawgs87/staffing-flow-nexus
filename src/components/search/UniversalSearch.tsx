@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -10,10 +11,9 @@ import { supabase } from '@/lib/supabase';
 interface SearchResult {
   id: string;
   type: 'candidate' | 'contact' | 'company' | 'job' | 'project';
-  title: string;
+  name: string;
   subtitle: string;
   status?: string;
-  notes?: number;
 }
 
 interface UniversalSearchProps {
@@ -30,23 +30,31 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
     queryFn: async () => {
       if (!search.trim()) return [];
       
-      const { data, error } = await supabase.functions.invoke('universal-search', {
-        body: {
-          query: search.trim(),
-          types: selectedType === 'all' ? null : [selectedType],
-          limit: 20
-        }
-      });
+      try {
+        const { data, error } = await supabase.functions.invoke('universal-search', {
+          body: {
+            query: search.trim(),
+            types: selectedType === 'all' ? null : [selectedType],
+            limit: 20
+          }
+        });
 
-      if (error) throw error;
-      return data.results || [];
+        if (error) {
+          console.error('Search error:', error);
+          throw error;
+        }
+        return data?.results || [];
+      } catch (error) {
+        console.error('Search failed:', error);
+        return [];
+      }
     },
     enabled: search.length > 1
   });
 
   const filteredResults = selectedType === 'all' 
     ? results 
-    : results.filter(result => result.type === selectedType);
+    : results.filter((result: SearchResult) => result.type === selectedType);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -71,7 +79,6 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
   };
 
   const handleResultClick = (result: SearchResult) => {
-    // Navigate to the appropriate page based on type
     const routes = {
       candidate: '/candidates',
       contact: '/contacts',
@@ -86,7 +93,7 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-2xl max-h-[70vh] overflow-hidden fixed top-[15%] left-[50%] translate-x-[-50%] translate-y-0">
         <DialogHeader>
           <DialogTitle>Universal Search</DialogTitle>
         </DialogHeader>
@@ -105,14 +112,14 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
           </div>
 
           {/* Filter Buttons */}
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 overflow-x-auto">
             {['all', 'candidate', 'contact', 'company', 'job', 'project'].map((type) => (
               <Button
                 key={type}
                 variant={selectedType === type ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedType(type)}
-                className="capitalize"
+                className="capitalize whitespace-nowrap"
               >
                 {type}
               </Button>
@@ -120,7 +127,7 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
           </div>
 
           {/* Results */}
-          <div className="max-h-96 overflow-y-auto space-y-2">
+          <div className="max-h-80 overflow-y-auto space-y-2">
             {isLoading && search && (
               <div className="text-center py-4 text-gray-500">Searching...</div>
             )}
@@ -131,7 +138,7 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
               </div>
             )}
             
-            {filteredResults.map((result) => {
+            {filteredResults.map((result: SearchResult) => {
               const Icon = getIcon(result.type);
               return (
                 <div
@@ -144,7 +151,7 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
                       <Icon className="h-5 w-5 text-gray-600" />
                     </div>
                     <div>
-                      <div className="font-medium">{result.title}</div>
+                      <div className="font-medium">{result.name}</div>
                       <div className="text-sm text-gray-600">{result.subtitle}</div>
                     </div>
                   </div>
@@ -155,9 +162,6 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
                     {result.status && (
                       <Badge variant="outline">{result.status}</Badge>
                     )}
-                    {result.notes && (
-                      <Badge variant="outline">{result.notes} notes</Badge>
-                    )}
                   </div>
                 </div>
               );
@@ -167,7 +171,7 @@ const UniversalSearch = ({ open, onOpenChange }: UniversalSearchProps) => {
           {/* Quick Actions */}
           <div className="border-t pt-4">
             <div className="text-sm font-medium text-gray-900 mb-2">Quick Actions</div>
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 flex-wrap">
               <Button variant="outline" size="sm">
                 <Plus className="h-4 w-4 mr-1" />
                 Add Candidate

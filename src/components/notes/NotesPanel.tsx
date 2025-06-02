@@ -135,13 +135,32 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.abs(now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    
+    if (diffInHours < 24) {
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }) + ' today';
+    } else if (diffInHours < 48) {
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }) + ' yesterday';
+    } else {
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
   };
 
   return (
@@ -159,10 +178,10 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 max-h-96 overflow-y-auto">
         {/* Add New Note */}
         {isAdding && (
-          <div className="space-y-2 p-4 border rounded-lg bg-gray-50">
+          <div className="space-y-2 p-4 border rounded-lg bg-gray-50 sticky top-0 z-10">
             <Textarea
               placeholder="Add your note..."
               value={newNote}
@@ -175,7 +194,7 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
                 onClick={handleAddNote}
                 disabled={!newNote.trim() || addNoteMutation.isPending}
               >
-                Save Note
+                {addNoteMutation.isPending ? 'Saving...' : 'Save Note'}
               </Button>
               <Button 
                 size="sm" 
@@ -202,7 +221,7 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
         ) : (
           <div className="space-y-3">
             {notes.map((note) => (
-              <div key={note.id} className="border rounded-lg p-4">
+              <div key={note.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 {editingId === note.id ? (
                   <div className="space-y-2">
                     <Textarea
@@ -216,7 +235,7 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
                         onClick={handleUpdateNote}
                         disabled={!editContent.trim() || updateNoteMutation.isPending}
                       >
-                        Save
+                        {updateNoteMutation.isPending ? 'Saving...' : 'Save'}
                       </Button>
                       <Button 
                         size="sm" 
@@ -232,18 +251,28 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <User className="h-4 w-4" />
-                        <span>User</span>
-                        <Calendar className="h-4 w-4 ml-2" />
-                        <span>{formatDate(note.created_at)}</span>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center space-x-3 text-sm text-gray-600">
+                        <div className="flex items-center space-x-1">
+                          <User className="h-4 w-4" />
+                          <span className="font-medium">User</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="h-4 w-4" />
+                          <span className="font-medium">{formatDate(note.created_at)}</span>
+                        </div>
+                        {note.updated_at !== note.created_at && (
+                          <span className="text-xs text-gray-400">
+                            (edited {formatDate(note.updated_at)})
+                          </span>
+                        )}
                       </div>
                       <div className="flex space-x-1">
                         <Button 
                           size="sm" 
                           variant="ghost" 
                           onClick={() => handleEditNote(note)}
+                          className="h-8 w-8 p-0"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -252,14 +281,15 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
                           variant="ghost" 
                           onClick={() => handleDeleteNote(note.id)}
                           disabled={deleteNoteMutation.isPending}
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
-                    <div className="text-gray-900 mb-2">{note.content}</div>
+                    <div className="text-gray-900 mb-3 leading-relaxed">{note.content}</div>
                     {note.tags && note.tags.length > 0 && (
-                      <div className="flex space-x-1">
+                      <div className="flex space-x-1 flex-wrap">
                         {note.tags.map((tag) => (
                           <Badge key={tag} variant="secondary" className="text-xs">
                             {tag}
