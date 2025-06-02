@@ -11,6 +11,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const location = useLocation();
   const { signOut, user } = useAuth();
   const isMobile = useIsMobile();
@@ -71,10 +72,19 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   const handleSignOut = async () => {
+    if (isLoggingOut) return; // Prevent multiple logout attempts
+    
+    setIsLoggingOut(true);
     try {
+      console.log('Attempting to sign out...');
       await signOut();
+      console.log('Sign out successful');
     } catch (error) {
       console.error('Error signing out:', error);
+      // Even if there's an error, we still want to redirect
+      window.location.href = '/';
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -191,13 +201,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </Button>
               <div className="hidden md:flex items-center space-x-2">
                 <span className="text-sm text-gray-600">{user?.email}</span>
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleSignOut}
+                  disabled={isLoggingOut}
+                >
                   <LogOut className="h-5 w-5" />
+                  {isLoggingOut && <span className="ml-1">...</span>}
                 </Button>
               </div>
               <div className="md:hidden">
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleSignOut}
+                  disabled={isLoggingOut}
+                >
                   <LogOut className="h-5 w-5" />
+                  {isLoggingOut && <span className="ml-1">...</span>}
                 </Button>
               </div>
             </div>
