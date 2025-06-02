@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { User, Mail, Phone, MapPin, Calendar, DollarSign, Edit } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { User, Mail, Phone, MapPin, Calendar, DollarSign, Edit, ExternalLink, Linkedin, Globe } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
 
 interface CandidateDetailsProps {
@@ -26,110 +25,120 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                <User className="h-8 w-8 text-blue-600" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl">{candidate.first_name} {candidate.last_name}</CardTitle>
-                <p className="text-gray-600">{candidate.title || 'No title specified'}</p>
-                <Badge className={getStatusColor(candidate.status)}>
-                  {candidate.status}
-                </Badge>
-              </div>
+      {/* Header Section */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-4">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <User className="h-8 w-8 text-blue-600" />
             </div>
-            <Button onClick={onEdit}>
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{candidate.first_name} {candidate.last_name}</h1>
+              <p className="text-gray-600">{candidate.title || 'No title specified'}</p>
+              <Badge className={getStatusColor(candidate.status)}>
+                {candidate.status}
+              </Badge>
+            </div>
           </div>
-        </CardHeader>
-      </Card>
+          <Button onClick={onEdit}>
+            <Edit className="h-4 w-4 mr-2" />
+            Edit
+          </Button>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Contact Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {candidate.email && (
-              <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-gray-400" />
-                <span>{candidate.email}</span>
-              </div>
-            )}
-            {candidate.phone && (
-              <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-gray-400" />
-                <span>{candidate.phone}</span>
-              </div>
-            )}
-            {candidate.location && (
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-5 w-5 text-gray-400" />
-                <span>{candidate.location}</span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Professional Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Professional Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Information Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {candidate.email && (
             <div className="flex items-center space-x-3">
-              <Calendar className="h-5 w-5 text-gray-400" />
-              <span>{candidate.experience_years || 0} years of experience</span>
+              <Mail className="h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm text-gray-500">Email</p>
+                <p className="font-medium">{candidate.email}</p>
+              </div>
             </div>
-            {(candidate.salary_expectation_min || candidate.salary_expectation_max) && (
-              <div className="flex items-center space-x-3">
-                <DollarSign className="h-5 w-5 text-gray-400" />
-                <span>
+          )}
+          {candidate.phone && (
+            <div className="flex items-center space-x-3">
+              <Phone className="h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm text-gray-500">Phone</p>
+                <p className="font-medium">{candidate.phone}</p>
+              </div>
+            </div>
+          )}
+          {candidate.location && (
+            <div className="flex items-center space-x-3">
+              <MapPin className="h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm text-gray-500">Location</p>
+                <p className="font-medium">{candidate.location}</p>
+              </div>
+            </div>
+          )}
+          <div className="flex items-center space-x-3">
+            <Calendar className="h-5 w-5 text-gray-400" />
+            <div>
+              <p className="text-sm text-gray-500">Experience</p>
+              <p className="font-medium">{candidate.experience_years || 0} years</p>
+            </div>
+          </div>
+          {(candidate.salary_expectation_min || candidate.salary_expectation_max) && (
+            <div className="flex items-center space-x-3">
+              <DollarSign className="h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm text-gray-500">Salary Expectation</p>
+                <p className="font-medium">
                   ${candidate.salary_expectation_min?.toLocaleString() || 'N/A'} - 
                   ${candidate.salary_expectation_max?.toLocaleString() || 'N/A'}
-                </span>
+                </p>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+          )}
+          {candidate.linkedin_url && (
+            <div className="flex items-center space-x-3">
+              <Linkedin className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-500">LinkedIn</p>
+                <a href={candidate.linkedin_url} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center">
+                  Profile <ExternalLink className="h-3 w-3 ml-1" />
+                </a>
+              </div>
+            </div>
+          )}
+          {candidate.portfolio_url && (
+            <div className="flex items-center space-x-3">
+              <Globe className="h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm text-gray-500">Portfolio</p>
+                <a href={candidate.portfolio_url} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center">
+                  View Portfolio <ExternalLink className="h-3 w-3 ml-1" />
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
 
-        {/* Skills */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Skills</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Skills Section */}
+        {candidate.skills && candidate.skills.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-sm font-medium text-gray-500 mb-2">Skills</h3>
             <div className="flex flex-wrap gap-2">
-              {(candidate.skills || []).map((skill: string, index: number) => (
+              {candidate.skills.map((skill: string, index: number) => (
                 <Badge key={index} variant="secondary">
                   {skill}
                 </Badge>
               ))}
-              {(!candidate.skills || candidate.skills.length === 0) && (
-                <span className="text-gray-500">No skills listed</span>
-              )}
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Notes */}
-        <Card>
-          <CardContent className="p-0">
-            <NotesPanel
-              entityType="candidate"
-              entityId={candidate.id}
-              entityName={`${candidate.first_name} ${candidate.last_name}`}
-            />
-          </CardContent>
-        </Card>
+          </div>
+        )}
       </div>
+
+      {/* Notes Section */}
+      <NotesPanel
+        entityType="candidate"
+        entityId={candidate.id}
+        entityName={`${candidate.first_name} ${candidate.last_name}`}
+      />
     </div>
   );
 };

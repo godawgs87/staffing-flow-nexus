@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import NoteForm from './NoteForm';
 import NoteItem from './NoteItem';
 
@@ -32,6 +33,7 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
   const [editContent, setEditContent] = useState('');
 
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const fetchNotes = async (): Promise<Note[]> => {
     console.log('Fetching notes for:', { entityType, entityId });
@@ -57,17 +59,16 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
 
   const addNoteMutation = useMutation({
     mutationFn: async (content: string) => {
-      // For now, use a dummy author_id since we don't have auth yet
-      const dummyUserId = '00000000-0000-0000-0000-000000000000';
+      if (!user) throw new Error('User not authenticated');
 
-      console.log('Adding note:', { content, entityType, entityId });
+      console.log('Adding note:', { content, entityType, entityId, userId: user.id });
       const { data, error } = await supabase
         .from('notes')
         .insert({
           entity_type: entityType,
           entity_id: entityId,
           content,
-          author_id: dummyUserId
+          author_id: user.id
         })
         .select()
         .single();
@@ -161,6 +162,18 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
       deleteNoteMutation.mutate(id);
     }
   };
+
+  if (!user) {
+    return (
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-center text-gray-500">
+            Please log in to view and add notes.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

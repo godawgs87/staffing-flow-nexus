@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { User, Mail, Phone, Building2, Edit, Linkedin } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { User, Mail, Phone, Building2, Edit, Linkedin, ExternalLink } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
 
 interface ContactDetailsProps {
@@ -23,82 +22,74 @@ const ContactDetails = ({ contact, onEdit }: ContactDetailsProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                <User className="h-8 w-8 text-blue-600" />
-              </div>
+      {/* Header Section */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-4">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+              <User className="h-8 w-8 text-blue-600" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{contact.first_name} {contact.last_name}</h1>
+              <p className="text-gray-600">{contact.title || 'No title specified'}</p>
+              <Badge className={getTypeColor(contact.contact_type)}>
+                {contact.contact_type}
+              </Badge>
+            </div>
+          </div>
+          <Button onClick={onEdit}>
+            <Edit className="h-4 w-4 mr-2" />
+            Edit
+          </Button>
+        </div>
+
+        {/* Contact Information Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {contact.email && (
+            <div className="flex items-center space-x-3">
+              <Mail className="h-5 w-5 text-gray-400" />
               <div>
-                <CardTitle className="text-2xl">{contact.first_name} {contact.last_name}</CardTitle>
-                <p className="text-gray-600">{contact.title || 'No title specified'}</p>
-                <Badge className={getTypeColor(contact.contact_type)}>
-                  {contact.contact_type}
-                </Badge>
+                <p className="text-sm text-gray-500">Email</p>
+                <p className="font-medium">{contact.email}</p>
               </div>
             </div>
-            <Button onClick={onEdit}>
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
+          )}
+          {contact.phone && (
+            <div className="flex items-center space-x-3">
+              <Phone className="h-5 w-5 text-gray-400" />
+              <div>
+                <p className="text-sm text-gray-500">Phone</p>
+                <p className="font-medium">{contact.phone}</p>
+              </div>
+            </div>
+          )}
+          <div className="flex items-center space-x-3">
+            <Building2 className="h-5 w-5 text-gray-400" />
+            <div>
+              <p className="text-sm text-gray-500">Company</p>
+              <p className="font-medium">{contact.companies?.name || 'No company assigned'}</p>
+            </div>
           </div>
-        </CardHeader>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Contact Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {contact.email && (
-              <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-gray-400" />
-                <span>{contact.email}</span>
-              </div>
-            )}
-            {contact.phone && (
-              <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-gray-400" />
-                <span>{contact.phone}</span>
-              </div>
-            )}
-            {contact.linkedin_url && (
-              <div className="flex items-center space-x-3">
-                <Linkedin className="h-5 w-5 text-gray-400" />
-                <a href={contact.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                  LinkedIn Profile
+          {contact.linkedin_url && (
+            <div className="flex items-center space-x-3">
+              <Linkedin className="h-5 w-5 text-blue-600" />
+              <div>
+                <p className="text-sm text-gray-500">LinkedIn</p>
+                <a href={contact.linkedin_url} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center">
+                  Profile <ExternalLink className="h-3 w-3 ml-1" />
                 </a>
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Company Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Company Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <Building2 className="h-5 w-5 text-gray-400" />
-              <span>{contact.companies?.name || 'No company assigned'}</span>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Notes Section */}
-        <div className="lg:col-span-2">
-          <NotesPanel
-            entityType="contact"
-            entityId={contact.id}
-            entityName={`${contact.first_name} ${contact.last_name}`}
-          />
+          )}
         </div>
       </div>
+
+      {/* Notes Section */}
+      <NotesPanel
+        entityType="contact"
+        entityId={contact.id}
+        entityName={`${contact.first_name} ${contact.last_name}`}
+      />
     </div>
   );
 };

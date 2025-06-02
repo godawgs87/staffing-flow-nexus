@@ -1,16 +1,17 @@
-
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User, UserCheck, DollarSign, Shield, Brain, Building2, Contact, SearchIcon } from 'lucide-react';
+import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User, UserCheck, DollarSign, Shield, Brain, Building2, Contact, SearchIcon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContext';
 import UniversalSearch from './search/UniversalSearch';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
+  const { signOut, user } = useAuth();
 
   const navigationGroups = [
     {
@@ -67,6 +68,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     return location.pathname.startsWith(href);
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -105,9 +114,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 3
               </Badge>
             </Button>
-            <Button variant="ghost" size="sm">
-              <User className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">{user?.email}</span>
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </header>
