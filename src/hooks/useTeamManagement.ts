@@ -62,6 +62,7 @@ export const useInviteTeamMember = () => {
   
   return useMutation({
     mutationFn: async ({ email, role }: { email: string; role: string }) => {
+      // First create the invitation in the database
       const { data, error } = await supabase.rpc('invite_team_member', {
         invite_email: email,
         invite_role: role
@@ -70,6 +71,33 @@ export const useInviteTeamMember = () => {
       if (error) {
         console.error('Error inviting team member:', error);
         throw error;
+      }
+
+      // Get current user info for the email
+      const { data: currentUser } = await supabase.auth.getUser();
+      const { data: currentProfile } = await supabase
+        .from('profiles')
+        .select('first_name, last_name')
+        .eq('id', currentUser.user?.id)
+        .single();
+
+      const inviterName = currentProfile 
+        ? `${currentProfile.first_name || ''} ${currentProfile.last_name || ''}`.trim()
+        : currentUser.user?.email;
+
+      // Send the invitation email
+      const { error: emailError } = await supabase.functions.invoke('send-team-invitation', {
+        body: {
+          email,
+          role,
+          inviterName: inviterName || 'TalentFlow Admin'
+        }
+      });
+
+      if (emailError) {
+        console.error('Error sending invitation email:', emailError);
+        // Don't throw here - the invitation was created successfully
+        // Just log the email error
       }
       
       return data;
