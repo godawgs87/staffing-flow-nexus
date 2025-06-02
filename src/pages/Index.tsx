@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Dashboard from '../components/Dashboard';
 import Candidates from '../components/Candidates';
+import Contacts from '../components/Contacts';
+import Companies from '../components/Companies';
 import Jobs from '../components/Jobs';
 import Projects from '../components/Projects';
 import Pipeline from '../components/Pipeline';
@@ -22,6 +24,8 @@ const Index = () => {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/candidates" element={<Candidates />} />
+        <Route path="/contacts" element={<Contacts />} />
+        <Route path="/companies" element={<Companies />} />
         <Route path="/jobs" element={<Jobs />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/pipeline" element={<Pipeline />} />
