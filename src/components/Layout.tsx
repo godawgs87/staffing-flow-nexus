@@ -134,7 +134,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             {navigationGroups.map((group) => (
               <div key={group.title} className="mb-6">
                 {sidebarOpen && (
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-0">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-3">
                     {group.title}
                   </h3>
                 )}
@@ -163,9 +163,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </nav>
 
-        {/* Main Content */}
+        {/* Main Content with Desktop Optimized Width */}
         <main className="flex-1 p-6">
-          {children}
+          <div className="max-w-7xl mx-auto">
+            <div className="w-full max-w-6xl mx-auto">
+              {children}
+            </div>
+          </div>
         </main>
       </div>
 

@@ -50,13 +50,6 @@ const AdminDashboard = () => {
     { name: 'Webhook API', key: 'sk-hook-***************', status: 'inactive', lastUsed: '3 days ago' }
   ]);
 
-  const [teamMembers, setTeamMembers] = useState([
-    { name: 'Sarah Johnson', email: 'sarah@company.com', role: 'admin', status: 'active', lastLogin: '5 minutes ago' },
-    { name: 'Mike Chen', email: 'mike@company.com', role: 'manager', status: 'active', lastLogin: '2 hours ago' },
-    { name: 'Emily Rodriguez', email: 'emily@company.com', role: 'recruiter', status: 'active', lastLogin: '1 day ago' },
-    { name: 'David Kim', email: 'david@company.com', role: 'recruiter', status: 'pending', lastLogin: 'Never' }
-  ]);
-
   const [systemHealth, setSystemHealth] = useState({
     apiUptime: 99.9,
     responseTime: 145,
@@ -182,7 +175,7 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">System administration and API management</p>
+          <p className="text-gray-600">System administration and team management</p>
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
@@ -209,15 +202,22 @@ const AdminDashboard = () => {
         <SystemHealthMetrics systemHealth={systemHealth} />
       )}
 
-      <Tabs defaultValue="api" className="space-y-4">
+      <Tabs defaultValue="users" className="space-y-4">
         <TabsList>
+          {hasPermission('user_management') && <TabsTrigger value="users">Team Management</TabsTrigger>}
           {hasPermission('api_management') && <TabsTrigger value="api">API Management</TabsTrigger>}
           {hasPermission('job_board_apis') && <TabsTrigger value="job-boards">Job Board APIs</TabsTrigger>}
           {hasPermission('workflows') && <TabsTrigger value="workflows">Workflows</TabsTrigger>}
-          {hasPermission('user_management') && <TabsTrigger value="users">Team Management</TabsTrigger>}
           {hasPermission('system_settings') && <TabsTrigger value="settings">System Settings</TabsTrigger>}
           {hasPermission('analytics') && <TabsTrigger value="analytics">Analytics</TabsTrigger>}
         </TabsList>
+
+        {/* Team Management */}
+        {hasPermission('user_management') && (
+          <TabsContent value="users" className="space-y-4">
+            <TeamManagement />
+          </TabsContent>
+        )}
 
         {/* API Management */}
         {hasPermission('api_management') && (
@@ -243,16 +243,6 @@ const AdminDashboard = () => {
               featureToggles={featureToggles}
               onWorkTypeToggle={handleWorkTypeToggle}
               onFeatureToggle={handleFeatureToggle}
-            />
-          </TabsContent>
-        )}
-
-        {/* Team Management */}
-        {hasPermission('user_management') && (
-          <TabsContent value="users" className="space-y-4">
-            <TeamManagement 
-              teamMembers={teamMembers} 
-              hasApiManagementPermission={hasPermission('api_management')} 
             />
           </TabsContent>
         )}

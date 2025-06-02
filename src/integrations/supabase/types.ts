@@ -320,22 +320,37 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          first_name: string | null
           id: string
+          invited_at: string | null
+          last_login: string | null
+          last_name: string | null
           role: string | null
+          status: string | null
           updated_at: string
           username: string | null
         }
         Insert: {
           created_at?: string
+          first_name?: string | null
           id: string
+          invited_at?: string | null
+          last_login?: string | null
+          last_name?: string | null
           role?: string | null
+          status?: string | null
           updated_at?: string
           username?: string | null
         }
         Update: {
           created_at?: string
+          first_name?: string | null
           id?: string
+          invited_at?: string | null
+          last_login?: string | null
+          last_name?: string | null
           role?: string | null
+          status?: string | null
           updated_at?: string
           username?: string | null
         }
@@ -401,12 +416,61 @@ export type Database = {
           },
         ]
       }
+      team_invitations: {
+        Row: {
+          accepted_at: string | null
+          email: string
+          expires_at: string
+          id: string
+          invited_at: string
+          invited_by: string | null
+          role: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          invited_at?: string
+          invited_by?: string | null
+          role?: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_at?: string
+          invited_by?: string | null
+          role?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_team_members: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          first_name: string
+          last_name: string
+          role: string
+          status: string
+          last_login: string
+          invited_at: string
+        }[]
+      }
+      invite_team_member: {
+        Args: { invite_email: string; invite_role?: string }
+        Returns: string
+      }
     }
     Enums: {
       candidate_status:
