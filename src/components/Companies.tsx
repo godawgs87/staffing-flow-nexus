@@ -7,17 +7,34 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Building2, Users, MapPin, Globe } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
 import { useCompanies } from '@/hooks/useCompanies';
+import { useJobs } from '@/hooks/useJobs';
+import { useContacts } from '@/hooks/useContacts';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
   const { data: companies = [], isLoading, error } = useCompanies();
+  const { data: jobs = [] } = useJobs();
+  const { data: contacts = [] } = useContacts();
 
   const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (company.industry || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (company.location || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Helper function to get company stats
+  const getCompanyStats = (companyId: string) => {
+    const companyJobs = jobs.filter(job => job.company_id === companyId);
+    const activeJobs = companyJobs.filter(job => job.status === 'open').length;
+    const companyContacts = contacts.filter(contact => contact.company_id === companyId).length;
+    
+    return {
+      activeJobs,
+      totalContacts: companyContacts,
+      totalJobs: companyJobs.length
+    };
+  };
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -92,66 +109,70 @@ const Companies = () => {
 
           {/* Companies Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredCompanies.map((company) => (
-              <Card 
-                key={company.id} 
-                className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
-                  selectedCompany?.id === company.id ? 'ring-2 ring-blue-500' : ''
-                }`}
-                onClick={() => setSelectedCompany(company)}
-              >
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start space-x-3">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <Building2 className="h-6 w-6 text-blue-600" />
+            {filteredCompanies.map((company) => {
+              const stats = getCompanyStats(company.id);
+              
+              return (
+                <Card 
+                  key={company.id} 
+                  className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
+                    selectedCompany?.id === company.id ? 'ring-2 ring-blue-500' : ''
+                  }`}
+                  onClick={() => setSelectedCompany(company)}
+                >
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <Building2 className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-medium">{company.name}</h3>
+                            <p className="text-gray-600">{company.industry || 'No industry specified'}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-lg font-medium">{company.name}</h3>
-                          <p className="text-gray-600">{company.industry || 'No industry specified'}</p>
-                        </div>
+                        <Badge className="bg-blue-100 text-blue-800">
+                          Client
+                        </Badge>
                       </div>
-                      <Badge className="bg-blue-100 text-blue-800">
-                        Client
-                      </Badge>
-                    </div>
 
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex items-center space-x-2">
-                        <Users className="h-4 w-4" />
-                        <span>{company.size || 'Size not specified'}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>{company.location || 'Location not specified'}</span>
-                      </div>
-                      {company.website && (
+                      <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-center space-x-2">
-                          <Globe className="h-4 w-4" />
-                          <span>{company.website}</span>
+                          <Users className="h-4 w-4" />
+                          <span>{company.size || 'Size not specified'}</span>
                         </div>
-                      )}
-                    </div>
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="h-4 w-4" />
+                          <span>{company.location || 'Location not specified'}</span>
+                        </div>
+                        {company.website && (
+                          <div className="flex items-center space-x-2">
+                            <Globe className="h-4 w-4" />
+                            <span>{company.website}</span>
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                      <div className="text-center">
-                        <div className="text-lg font-semibold text-blue-600">0</div>
-                        <div className="text-xs text-gray-500">Active Jobs</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-lg font-semibold text-green-600">0</div>
-                        <div className="text-xs text-gray-500">Candidates</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-lg font-semibold text-purple-600">0</div>
-                        <div className="text-xs text-gray-500">Notes</div>
+                      <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+                        <div className="text-center">
+                          <div className="text-lg font-semibold text-blue-600">{stats.activeJobs}</div>
+                          <div className="text-xs text-gray-500">Active Jobs</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-semibold text-green-600">{stats.totalContacts}</div>
+                          <div className="text-xs text-gray-500">Contacts</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-semibold text-purple-600">0</div>
+                          <div className="text-xs text-gray-500">Notes</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </div>
 

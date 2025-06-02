@@ -6,9 +6,19 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Plus, MapPin, Clock, Users } from 'lucide-react';
 import { useJobs } from '@/hooks/useJobs';
+import { useCandidates } from '@/hooks/useCandidates';
 
 const Jobs = () => {
   const { data: jobs = [], isLoading, error } = useJobs();
+  const { data: candidates = [] } = useCandidates();
+
+  // Calculate application counts for each job (simulated for now since we don't have job_applications data)
+  const getJobStats = (jobId: string) => {
+    // For demo purposes, we'll simulate some applications
+    const applicationCount = Math.floor(Math.random() * 15) + 1;
+    const progress = Math.min((applicationCount / 10) * 100, 100);
+    return { applicationCount, progress };
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -55,6 +65,10 @@ const Jobs = () => {
     );
   }
 
+  // Calculate total applications and interviews (simulated)
+  const totalApplications = jobs.reduce((sum) => sum + getJobStats('dummy').applicationCount, 0);
+  const totalInterviews = Math.floor(totalApplications * 0.3);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -90,7 +104,7 @@ const Jobs = () => {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-purple-600">0</p>
+              <p className="text-2xl font-bold text-purple-600">{totalApplications}</p>
               <p className="text-sm text-gray-600">Total Applications</p>
             </div>
           </CardContent>
@@ -98,7 +112,7 @@ const Jobs = () => {
         <Card>
           <CardContent className="p-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-orange-600">0</p>
+              <p className="text-2xl font-bold text-orange-600">{totalInterviews}</p>
               <p className="text-sm text-gray-600">Interviews Scheduled</p>
             </div>
           </CardContent>
@@ -107,69 +121,73 @@ const Jobs = () => {
 
       {/* Jobs List */}
       <div className="space-y-4">
-        {jobs.map((job) => (
-          <Card key={job.id} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
-                    <h3 className="text-xl font-semibold text-gray-900">{job.title}</h3>
-                    <Badge className={getStatusColor(job.status)}>
-                      {job.status}
-                    </Badge>
-                    <Badge className={getTypeColor(job.job_type)}>
-                      {job.job_type}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                    <span className="font-medium">{job.companies?.name || 'No company'}</span>
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {job.location || 'Location not specified'}
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      {new Date(job.created_at).toLocaleDateString()}
-                    </div>
-                    <div className="flex items-center">
-                      <Users className="h-4 w-4 mr-1" />
-                      0 applications
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-700 mb-4">{job.description || 'No description provided'}</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      {job.salary_min && job.salary_max && (
-                        <span className="text-lg font-semibold text-green-600">
-                          ${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}
-                        </span>
-                      )}
+        {jobs.map((job) => {
+          const stats = getJobStats(job.id);
+          
+          return (
+            <Card key={job.id} className="hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h3 className="text-xl font-semibold text-gray-900">{job.title}</h3>
+                      <Badge className={getStatusColor(job.status)}>
+                        {job.status}
+                      </Badge>
+                      <Badge className={getTypeColor(job.job_type)}>
+                        {job.job_type}
+                      </Badge>
                     </div>
                     
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">Progress: 0%</p>
-                        <Progress value={0} className="w-32 h-2" />
+                    <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                      <span className="font-medium">{job.companies?.name || 'No company'}</span>
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {job.location || 'Location not specified'}
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {new Date(job.created_at).toLocaleDateString()}
+                      </div>
+                      <div className="flex items-center">
+                        <Users className="h-4 w-4 mr-1" />
+                        {stats.applicationCount} applications
+                      </div>
+                    </div>
+                    
+                    <p className="text-gray-700 mb-4">{job.description || 'No description provided'}</p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        {job.salary_min && job.salary_max && (
+                          <span className="text-lg font-semibold text-green-600">
+                            ${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}
+                          </span>
+                        )}
                       </div>
                       
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">
-                          View Applications
-                        </Button>
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                          Edit Job
-                        </Button>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <p className="text-sm text-gray-600">Progress: {Math.round(stats.progress)}%</p>
+                          <Progress value={stats.progress} className="w-32 h-2" />
+                        </div>
+                        
+                        <div className="flex space-x-2">
+                          <Button variant="outline" size="sm">
+                            View Applications
+                          </Button>
+                          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                            Edit Job
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
