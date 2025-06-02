@@ -1,0 +1,90 @@
+
+SOFTWARE DEVELOPMENT SERVICES AGREEMENT
+
+This Software Development Services Agreement ("Agreement") is entered into on [DATE] between TechCorp Solutions Inc., a Delaware corporation ("Company"), and [CONTRACTOR NAME], an independent contractor ("Contractor").
+
+1. SERVICES
+Contractor agrees to provide software development services including but not limited to:
+- Full-stack web application development
+- Frontend development using React and TypeScript
+- Backend API development
+- Database design and implementation
+- Security implementation and testing
+
+2. INSURANCE REQUIREMENTS
+Contractor must maintain the following insurance coverage throughout the term of this Agreement:
+- General Liability insurance with minimum coverage of $1,000,000 per occurrence
+- Professional Liability (Errors & Omissions) insurance with minimum coverage of $2,000,000 per claim
+- Workers Compensation insurance as required by applicable law
+- Cyber Liability insurance with minimum coverage of $500,000
+
+3. COMPLIANCE AND SECURITY
+Contractor must comply with all applicable laws and regulations, including:
+- SOC 2 Type II compliance certification required
+- PCI DSS compliance for payment processing components
+- GDPR compliance for handling personal data
+- All personnel must undergo criminal background checks
+- Drug screening required for all team members
+- Security clearance may be required for certain projects
+
+4. LOCATION AND WORK ARRANGEMENTS
+- Primary work location: California (San Francisco Bay Area)
+- Remote work permitted up to 60% of time
+- On-site presence required for client meetings and sensitive projects
+- Travel to client locations may be required (up to 25% travel)
+
+5. TRAINING AND CERTIFICATION REQUIREMENTS
+All Contractor personnel must complete:
+- Company-specific security awareness training within 30 days of assignment
+- Annual cybersecurity training and certification
+- OSHA workplace safety training
+- Anti-harassment and workplace conduct training
+- Technical certification in relevant technologies (AWS, React, etc.)
+
+6. REQUIRED ROLES AND POSITIONS
+This contract covers the following positions:
+- Senior Software Engineer (2 positions)
+- Frontend Developer (React/TypeScript specialist)
+- Backend Developer (Node.js/Python)
+- DevOps Engineer (AWS/Kubernetes experience)
+- Quality Assurance Engineer
+- Technical Project Manager
+
+7. CONFIDENTIALITY
+Contractor acknowledges that all information disclosed is confidential and proprietary. Contractor agrees to execute a separate Non-Disclosure Agreement (NDA) prior to project commencement.
+
+8. PAYMENT TERMS
+- Rate: $150-200 per hour based on role and experience
+- Payment terms: Net 30 days
+- Invoices must include detailed time tracking
+- Penalties for late delivery: 2% of project value per week
+
+9. INTELLECTUAL PROPERTY
+All work product created under this Agreement shall be the exclusive property of Company. Contractor assigns all rights, title, and interest to Company.
+
+10. TERMINATION
+Either party may terminate this Agreement with 30 days written notice. In case of material breach, immediate termination is permitted.
+
+11. LIABILITY AND INDEMNIFICATION
+Contractor's liability is limited to the amount paid under this Agreement. Contractor agrees to indemnify Company against third-party claims arising from Contractor's negligence or willful misconduct.
+
+12. BACKGROUND CHECKS AND SCREENING
+All Contractor personnel must successfully complete:
+- Federal criminal background check
+- Employment verification for previous 5 years
+- Educational credential verification
+- Professional reference checks (minimum 3 references)
+- Credit check for positions handling financial data
+
+13. GOVERNING LAW
+This Agreement shall be governed by the laws of the State of California.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first written above.
+
+COMPANY:                           CONTRACTOR:
+TechCorp Solutions Inc.            [CONTRACTOR NAME]
+
+By: _________________________     By: _________________________
+Name: John Smith                   Name: [CONTRACTOR NAME]
+Title: CEO                         Title: Independent Contractor
+Date: _______________________     Date: _______________________
