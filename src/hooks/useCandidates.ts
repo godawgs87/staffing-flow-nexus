@@ -9,7 +9,13 @@ export const useCandidates = () => {
       console.log('Fetching candidates from Supabase...');
       const { data, error } = await supabase
         .from('candidates')
-        .select('*')
+        .select(`
+          *,
+          companies (
+            id,
+            name
+          )
+        `)
         .order('created_at', { ascending: false });
       
       if (error) {

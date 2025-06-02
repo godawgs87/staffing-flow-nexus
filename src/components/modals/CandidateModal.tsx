@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import { useCompanies } from '@/hooks/useCompanies';
 
 interface Candidate {
   id?: string;
@@ -23,6 +24,7 @@ interface Candidate {
   experience_years?: number;
   salary_expectation_min?: number;
   salary_expectation_max?: number;
+  company_id?: string;
 }
 
 interface CandidateModalProps {
@@ -34,21 +36,59 @@ interface CandidateModalProps {
 
 const CandidateModal = ({ isOpen, onClose, candidate, mode }: CandidateModalProps) => {
   const [formData, setFormData] = useState({
-    first_name: candidate?.first_name || '',
-    last_name: candidate?.last_name || '',
-    email: candidate?.email || '',
-    phone: candidate?.phone || '',
-    title: candidate?.title || '',
-    location: candidate?.location || '',
-    status: candidate?.status || 'new',
-    skills: candidate?.skills?.join(', ') || '',
-    experience_years: candidate?.experience_years?.toString() || '',
-    salary_expectation_min: candidate?.salary_expectation_min?.toString() || '',
-    salary_expectation_max: candidate?.salary_expectation_max?.toString() || '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    title: '',
+    location: '',
+    status: 'new',
+    skills: '',
+    experience_years: '',
+    salary_expectation_min: '',
+    salary_expectation_max: '',
+    company_id: '',
   });
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { data: companies = [] } = useCompanies();
+
+  // Reset form when modal opens or candidate changes
+  useEffect(() => {
+    if (candidate) {
+      setFormData({
+        first_name: candidate.first_name || '',
+        last_name: candidate.last_name || '',
+        email: candidate.email || '',
+        phone: candidate.phone || '',
+        title: candidate.title || '',
+        location: candidate.location || '',
+        status: candidate.status || 'new',
+        skills: candidate.skills?.join(', ') || '',
+        experience_years: candidate.experience_years?.toString() || '',
+        salary_expectation_min: candidate.salary_expectation_min?.toString() || '',
+        salary_expectation_max: candidate.salary_expectation_max?.toString() || '',
+        company_id: candidate.company_id || '',
+      });
+    } else {
+      // Clear form for new candidates
+      setFormData({
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        title: '',
+        location: '',
+        status: 'new',
+        skills: '',
+        experience_years: '',
+        salary_expectation_min: '',
+        salary_expectation_max: '',
+        company_id: '',
+      });
+    }
+  }, [candidate, isOpen]);
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
@@ -58,6 +98,7 @@ const CandidateModal = ({ isOpen, onClose, candidate, mode }: CandidateModalProp
         experience_years: data.experience_years ? parseInt(data.experience_years) : null,
         salary_expectation_min: data.salary_expectation_min ? parseInt(data.salary_expectation_min) : null,
         salary_expectation_max: data.salary_expectation_max ? parseInt(data.salary_expectation_max) : null,
+        company_id: data.company_id || null,
       };
 
       if (mode === 'add') {
@@ -161,6 +202,23 @@ const CandidateModal = ({ isOpen, onClose, candidate, mode }: CandidateModalProp
               onChange={(e) => handleChange('title', e.target.value)}
               readOnly={isReadonly}
             />
+          </div>
+
+          <div>
+            <Label htmlFor="company_id">Company</Label>
+            <Select value={formData.company_id} onValueChange={(value) => handleChange('company_id', value)} disabled={isReadonly}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a company" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">No Company</SelectItem>
+                {companies.map((company) => (
+                  <SelectItem key={company.id} value={company.id}>
+                    {company.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div>

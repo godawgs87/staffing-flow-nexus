@@ -12,6 +12,7 @@ export type Database = {
       candidates: {
         Row: {
           availability_date: string | null
+          company_id: string | null
           created_at: string | null
           email: string | null
           experience_years: number | null
@@ -33,6 +34,7 @@ export type Database = {
         }
         Insert: {
           availability_date?: string | null
+          company_id?: string | null
           created_at?: string | null
           email?: string | null
           experience_years?: number | null
@@ -54,6 +56,7 @@ export type Database = {
         }
         Update: {
           availability_date?: string | null
+          company_id?: string | null
           created_at?: string | null
           email?: string | null
           experience_years?: number | null
@@ -73,7 +76,15 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "candidates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       companies: {
         Row: {

@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { User, MapPin, Calendar, DollarSign } from 'lucide-react';
+import { User, MapPin, Calendar, DollarSign, Building2 } from 'lucide-react';
 
 interface CandidateListItemProps {
   candidate: any;
@@ -57,6 +57,12 @@ const CandidateListItem = ({ candidate, isSelected, onSelect, onView, onEdit }: 
                   <MapPin className="h-4 w-4" />
                   <span>{candidate.location || 'Not specified'}</span>
                 </div>
+                {candidate.companies && (
+                  <div className="flex items-center space-x-1">
+                    <Building2 className="h-4 w-4" />
+                    <span>{candidate.companies.name}</span>
+                  </div>
+                )}
                 {candidate.salary_expectation_min && candidate.salary_expectation_max && (
                   <div className="flex items-center space-x-1">
                     <DollarSign className="h-4 w-4" />
