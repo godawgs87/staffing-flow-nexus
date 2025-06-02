@@ -101,10 +101,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             ? 'w-64' 
             : 'w-16'
       } bg-white shadow-sm border-r min-h-screen transition-all duration-300 flex-shrink-0`}>
-        <div className="p-4">
+        <div className="p-2">
           {/* Mobile close button */}
           {isMobile && (
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-end mb-2">
               <Button variant="ghost" size="sm" onClick={closeSidebar}>
                 <X className="h-5 w-5" />
               </Button>
@@ -112,7 +112,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           )}
 
           {/* Logo and title */}
-          <div className="flex items-center space-x-3 mb-8">
+          <div className="flex items-center space-x-3 mb-6">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <Users className="h-5 w-5 text-white" />
             </div>
@@ -121,7 +121,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
           {/* Navigation groups */}
           {navigationGroups.map((group) => (
-            <div key={group.title} className="mb-6">
+            <div key={group.title} className="mb-4">
               {(sidebarOpen || isMobile) && (
                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3">
                   {group.title}
@@ -157,7 +157,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Header */}
         <header className="bg-white shadow-sm border-b flex-shrink-0">
-          <div className="flex items-center justify-between px-4 md:px-6 py-4">
+          <div className="flex items-center justify-between px-2 md:px-4 py-3">
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"

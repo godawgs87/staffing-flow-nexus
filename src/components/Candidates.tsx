@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { User } from 'lucide-react';
 import CandidateDetails from './CandidateDetails';
@@ -54,7 +55,7 @@ const Candidates = () => {
 
   if (isLoading) {
     return (
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-2 md:p-4 space-y-4">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
@@ -67,7 +68,7 @@ const Candidates = () => {
 
   if (error) {
     return (
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-2 md:p-4 space-y-4">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
@@ -89,7 +90,7 @@ const Candidates = () => {
   return (
     <div className="flex h-full w-full">
       {/* Main Content */}
-      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-4 md:p-6 space-y-6 overflow-auto`}>
+      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-2 md:p-4 space-y-4 overflow-auto`}>
         <CandidateListHeader 
           totalCount={candidates.length}
           onAddCandidate={() => openModal('add')}
@@ -101,7 +102,7 @@ const Candidates = () => {
         />
 
         {/* Candidates List */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           {filteredCandidates.map((candidate) => (
             <CandidateListItem
               key={candidate.id}

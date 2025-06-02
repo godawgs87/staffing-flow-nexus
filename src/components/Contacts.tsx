@@ -49,7 +49,7 @@ const Contacts = () => {
 
   if (isLoading) {
     return (
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-2 md:p-4 space-y-4">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
@@ -62,7 +62,7 @@ const Contacts = () => {
 
   if (error) {
     return (
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-2 md:p-4 space-y-4">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
@@ -84,7 +84,7 @@ const Contacts = () => {
   return (
     <div className="flex h-full w-full">
       {/* Main Content */}
-      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-4 md:p-6 space-y-6 overflow-auto`}>
+      <div className={`${isMobile ? 'w-full' : 'flex-1'} p-2 md:p-4 space-y-4 overflow-auto`}>
         <ContactListHeader 
           totalCount={contacts.length} 
           onAddContact={() => openModal('add')} 
@@ -96,7 +96,7 @@ const Contacts = () => {
         />
 
         {/* Contacts List */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           {filteredContacts.map((contact) => (
             <ContactListItem
               key={contact.id}
