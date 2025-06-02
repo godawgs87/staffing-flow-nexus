@@ -7,6 +7,7 @@ import { Building2, MapPin, DollarSign, Calendar, User, Briefcase, Edit, X } fro
 import { format } from 'date-fns';
 import { useIsMobile } from '@/hooks/use-mobile';
 import NotesPanel from './notes/NotesPanel';
+import JobApplicants from './jobs/JobApplicants';
 
 interface JobDetailsProps {
   job: any;
@@ -82,6 +83,9 @@ const JobDetails = ({ job, onEdit, onClose }: JobDetailsProps) => {
           </div>
         </CardHeader>
       </Card>
+
+      {/* Job Applicants - Only for active/open jobs */}
+      <JobApplicants jobId={job.id} jobStatus={job.status} />
 
       {/* Job Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
