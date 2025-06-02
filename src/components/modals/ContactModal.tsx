@@ -19,7 +19,7 @@ interface Contact {
   phone?: string;
   title?: string;
   company_id?: string;
-  contact_type?: string;
+  contact_type?: 'client' | 'partner' | 'vendor' | 'internal';
   linkedin_url?: string;
   notes?: string;
 }
@@ -39,7 +39,7 @@ const ContactModal = ({ isOpen, onClose, contact, mode }: ContactModalProps) => 
     phone: contact?.phone || '',
     title: contact?.title || '',
     company_id: contact?.company_id || '',
-    contact_type: contact?.contact_type || 'client',
+    contact_type: contact?.contact_type || 'client' as 'client' | 'partner' | 'vendor' | 'internal',
     linkedin_url: contact?.linkedin_url || '',
     notes: contact?.notes || '',
   });
@@ -51,7 +51,7 @@ const ContactModal = ({ isOpen, onClose, contact, mode }: ContactModalProps) => 
   const mutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       if (mode === 'add') {
-        const { error } = await supabase.from('contacts').insert([data]);
+        const { error } = await supabase.from('contacts').insert(data);
         if (error) throw error;
       } else if (mode === 'edit' && contact?.id) {
         const { error } = await supabase.from('contacts').update(data).eq('id', contact.id);
@@ -171,7 +171,7 @@ const ContactModal = ({ isOpen, onClose, contact, mode }: ContactModalProps) => 
           
           <div>
             <Label htmlFor="contact_type">Contact Type</Label>
-            <Select value={formData.contact_type} onValueChange={(value) => handleChange('contact_type', value)} disabled={isReadonly}>
+            <Select value={formData.contact_type} onValueChange={(value: 'client' | 'partner' | 'vendor' | 'internal') => handleChange('contact_type', value)} disabled={isReadonly}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
