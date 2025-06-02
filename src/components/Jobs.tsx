@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,9 +27,14 @@ interface Job {
 }
 
 const Jobs = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'add' | 'edit' | 'view'>('add');
-  const [selectedJob, setSelectedJob] = useState<Job | undefined>(undefined);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: 'add' | 'edit' | 'view';
+    job?: Job;
+  }>({
+    isOpen: false,
+    mode: 'add',
+  });
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const { toast } = useToast();
@@ -71,16 +77,12 @@ const Jobs = () => {
     return filtered;
   }, [jobs, searchTerm, statusFilter]);
 
-  const handleViewJob = (job: Job) => {
-    setSelectedJob(job);
-    setModalMode('view');
-    setIsModalOpen(true);
+  const openModal = (mode: 'add' | 'edit' | 'view', job?: Job) => {
+    setModalState({ isOpen: true, mode, job });
   };
 
-  const handleEditJob = (job: Job) => {
-    setSelectedJob(job);
-    setModalMode('edit');
-    setIsModalOpen(true);
+  const closeModal = () => {
+    setModalState({ isOpen: false, mode: 'add' });
   };
 
   const handleDeleteJob = async (jobId: string) => {
@@ -119,11 +121,7 @@ const Jobs = () => {
             <h1 className="text-2xl font-bold text-gray-900">Active Jobs</h1>
             <p className="text-gray-600">Manage job postings and track applications</p>
           </div>
-          <Button onClick={() => {
-            setSelectedJob(undefined);
-            setModalMode('add');
-            setIsModalOpen(true);
-          }}>
+          <Button onClick={() => openModal('add')}>
             <Plus className="h-4 w-4 mr-2" />
             Post New Job
           </Button>
@@ -172,11 +170,7 @@ const Jobs = () => {
                 : 'Start by posting your first job'
               }
             </p>
-            <Button onClick={() => {
-              setSelectedJob(undefined);
-              setModalMode('add');
-              setIsModalOpen(true);
-            }}>
+            <Button onClick={() => openModal('add')}>
               <Plus className="h-4 w-4 mr-2" />
               Post New Job
             </Button>
@@ -186,7 +180,7 @@ const Jobs = () => {
             <Card 
               key={job.id} 
               className="cursor-pointer hover:shadow-md transition-all duration-200 border-l-4 border-l-blue-500"
-              onClick={() => handleViewJob(job)}
+              onClick={() => openModal('view', job)}
             >
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
@@ -211,7 +205,7 @@ const Jobs = () => {
                       size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleEditJob(job);
+                        openModal('edit', job);
                       }}
                       className="h-8 w-8 p-0"
                     >
@@ -281,10 +275,10 @@ const Jobs = () => {
 
       {/* Job Modal */}
       <JobModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        job={selectedJob}
-        mode={modalMode}
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        job={modalState.job}
+        mode={modalState.mode}
       />
     </div>
   );

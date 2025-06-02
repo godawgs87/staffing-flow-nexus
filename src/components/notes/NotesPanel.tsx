@@ -53,8 +53,8 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
 
   const addNoteMutation = useMutation({
     mutationFn: async (content: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      // For now, use a dummy author_id since we don't have auth yet
+      const dummyUserId = '00000000-0000-0000-0000-000000000000';
 
       const { data, error } = await supabase
         .from('notes')
@@ -62,12 +62,15 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
           entity_type: entityType,
           entity_id: entityId,
           content,
-          author_id: user.id
+          author_id: dummyUserId
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error adding note:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
@@ -86,7 +89,10 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating note:', error);
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
@@ -103,7 +109,10 @@ const NotesPanel = ({ entityType, entityId, entityName }: NotesPanelProps) => {
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting note:', error);
+        throw error;
+      }
       return id;
     },
     onSuccess: () => {

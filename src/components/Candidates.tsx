@@ -6,11 +6,21 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Mail, User } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import CandidateModal from './modals/CandidateModal';
 import { useCandidates } from '@/hooks/useCandidates';
 
 const Candidates = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: 'add' | 'edit' | 'view';
+    candidate?: any;
+  }>({
+    isOpen: false,
+    mode: 'add',
+  });
+  
   const { data: candidates = [], isLoading, error } = useCandidates();
 
   const filteredCandidates = candidates.filter(candidate =>
@@ -18,6 +28,14 @@ const Candidates = () => {
     (candidate.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (candidate.skills || []).some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  const openModal = (mode: 'add' | 'edit' | 'view', candidate?: any) => {
+    setModalState({ isOpen: true, mode, candidate });
+  };
+
+  const closeModal = () => {
+    setModalState({ isOpen: false, mode: 'add' });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -65,7 +83,7 @@ const Candidates = () => {
           <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
           <p className="text-gray-600">Manage your talent pipeline ({candidates.length} total)</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
           <Plus className="h-4 w-4 mr-2" />
           Add Candidate
         </Button>
@@ -115,10 +133,24 @@ const Candidates = () => {
                         <p className="text-sm text-gray-600">{candidate.title || 'No title specified'}</p>
                       </div>
                     </div>
-                    <Badge className={getStatusColor(candidate.status)}>
-                      {candidate.status}
-                    </Badge>
+                    <div className="flex space-x-1">
+                      <Button size="sm" variant="ghost" onClick={(e) => {
+                        e.stopPropagation();
+                        openModal('view', candidate);
+                      }}>
+                        View
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={(e) => {
+                        e.stopPropagation();
+                        openModal('edit', candidate);
+                      }}>
+                        Edit
+                      </Button>
+                    </div>
                   </div>
+                  <Badge className={getStatusColor(candidate.status)}>
+                    {candidate.status}
+                  </Badge>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -150,7 +182,10 @@ const Candidates = () => {
                       <Mail className="h-4 w-4 mr-1" />
                       Contact
                     </Button>
-                    <Button size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700">
+                    <Button size="sm" className="flex-1 bg-blue-600 hover:bg-blue-700" onClick={(e) => {
+                      e.stopPropagation();
+                      openModal('view', candidate);
+                    }}>
                       View Profile
                     </Button>
                   </div>
@@ -178,6 +213,13 @@ const Candidates = () => {
           )}
         </div>
       </div>
+
+      <CandidateModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        candidate={modalState.candidate}
+        mode={modalState.mode}
+      />
     </div>
   );
 };

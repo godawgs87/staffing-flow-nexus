@@ -6,11 +6,21 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Mail, Phone, Building2, User } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import ContactModal from './modals/ContactModal';
 import { useContacts } from '@/hooks/useContacts';
 
 const Contacts = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedContact, setSelectedContact] = useState<any>(null);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: 'add' | 'edit' | 'view';
+    contact?: any;
+  }>({
+    isOpen: false,
+    mode: 'add',
+  });
+  
   const { data: contacts = [], isLoading, error } = useContacts();
 
   const filteredContacts = contacts.filter(contact =>
@@ -18,6 +28,14 @@ const Contacts = () => {
     (contact.companies?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (contact.title || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const openModal = (mode: 'add' | 'edit' | 'view', contact?: any) => {
+    setModalState({ isOpen: true, mode, contact });
+  };
+
+  const closeModal = () => {
+    setModalState({ isOpen: false, mode: 'add' });
+  };
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -61,7 +79,7 @@ const Contacts = () => {
           <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
           <p className="text-gray-600">Manage your business contacts and relationships ({contacts.length} total)</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
           <Plus className="h-4 w-4 mr-2" />
           Add Contact
         </Button>
@@ -134,11 +152,19 @@ const Contacts = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-500 mb-2">
-                        Added: {new Date(contact.created_at).toLocaleDateString()}
-                      </div>
-                      <Badge variant="outline">0 notes</Badge>
+                    <div className="flex space-x-1">
+                      <Button size="sm" variant="ghost" onClick={(e) => {
+                        e.stopPropagation();
+                        openModal('view', contact);
+                      }}>
+                        View
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={(e) => {
+                        e.stopPropagation();
+                        openModal('edit', contact);
+                      }}>
+                        Edit
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
@@ -165,6 +191,13 @@ const Contacts = () => {
           )}
         </div>
       </div>
+
+      <ContactModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        contact={modalState.contact}
+        mode={modalState.mode}
+      />
     </div>
   );
 };
