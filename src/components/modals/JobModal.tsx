@@ -2,15 +2,12 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useContacts } from '@/hooks/useContacts';
+import JobForm from './JobForm';
 
 interface Job {
   id?: string;
@@ -98,137 +95,23 @@ const JobModal = ({ isOpen, onClose, job, mode }: JobModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {mode === 'add' ? 'Post New Job' : mode === 'edit' ? 'Edit Job' : 'Job Details'}
           </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">Job Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => handleChange('title', e.target.value)}
-              readOnly={isReadonly}
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit}>
+          <JobForm
+            formData={formData}
+            companies={companies}
+            contacts={contacts}
+            isReadonly={isReadonly}
+            onChange={handleChange}
+          />
           
-          <div>
-            <Label htmlFor="company">Company *</Label>
-            <Select value={formData.company_id} onValueChange={(value) => handleChange('company_id', value)} disabled={isReadonly}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select company" />
-              </SelectTrigger>
-              <SelectContent>
-                {companies.map((company) => (
-                  <SelectItem key={company.id} value={company.id}>
-                    {company.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <Label htmlFor="contact">Contact</Label>
-            <Select value={formData.contact_id} onValueChange={(value) => handleChange('contact_id', value)} disabled={isReadonly}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select contact" />
-              </SelectTrigger>
-              <SelectContent>
-                {contacts.map((contact) => (
-                  <SelectItem key={contact.id} value={contact.id}>
-                    {contact.first_name} {contact.last_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              readOnly={isReadonly}
-              rows={4}
-            />
-          </div>
-          
-          <div>
-            <Label htmlFor="location">Location</Label>
-            <Input
-              id="location"
-              value={formData.location}
-              onChange={(e) => handleChange('location', e.target.value)}
-              readOnly={isReadonly}
-            />
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="job_type">Job Type</Label>
-              <Select value={formData.job_type} onValueChange={(value) => handleChange('job_type', value)} disabled={isReadonly}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="full-time">Full-time</SelectItem>
-                  <SelectItem value="part-time">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => handleChange('status', value)} disabled={isReadonly}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="open">Open</SelectItem>
-                  <SelectItem value="paused">Paused</SelectItem>
-                  <SelectItem value="filled">Filled</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="salary_min">Min Salary</Label>
-              <Input
-                id="salary_min"
-                type="number"
-                value={formData.salary_min}
-                onChange={(e) => handleChange('salary_min', e.target.value)}
-                readOnly={isReadonly}
-                placeholder="50000"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="salary_max">Max Salary</Label>
-              <Input
-                id="salary_max"
-                type="number"
-                value={formData.salary_max}
-                onChange={(e) => handleChange('salary_max', e.target.value)}
-                readOnly={isReadonly}
-                placeholder="80000"
-              />
-            </div>
-          </div>
-          
-          <DialogFooter>
+          <DialogFooter className="mt-6">
             <Button type="button" variant="outline" onClick={onClose}>
               {mode === 'view' ? 'Close' : 'Cancel'}
             </Button>
