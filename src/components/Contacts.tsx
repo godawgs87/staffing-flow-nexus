@@ -6,68 +6,60 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Mail, Phone, Building2, User } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import { useContacts } from '@/hooks/useContacts';
 
 const Contacts = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedContact, setSelectedContact] = useState<any>(null);
-
-  const contacts = [
-    {
-      id: 1,
-      name: 'Jennifer Walsh',
-      title: 'Hiring Manager',
-      company: 'TechCorp Inc.',
-      email: 'jennifer.walsh@techcorp.com',
-      phone: '+1 (555) 123-4567',
-      type: 'Client',
-      lastContact: '2 days ago',
-      notes: 4
-    },
-    {
-      id: 2,
-      name: 'Robert Kim',
-      title: 'VP of Engineering',
-      company: 'Global Solutions',
-      email: 'robert.kim@globalsolutions.com',
-      phone: '+1 (555) 987-6543',
-      type: 'Client',
-      lastContact: '1 week ago',
-      notes: 2
-    },
-    {
-      id: 3,
-      name: 'Lisa Chen',
-      title: 'Recruiter',
-      company: 'Creative Agency',
-      email: 'lisa.chen@creativeagency.com',
-      phone: '+1 (555) 456-7890',
-      type: 'Partner',
-      lastContact: '3 days ago',
-      notes: 6
-    }
-  ];
+  const { data: contacts = [], isLoading, error } = useContacts();
 
   const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contact.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    contact.title.toLowerCase().includes(searchTerm.toLowerCase())
+    `${contact.first_name} ${contact.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (contact.companies?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (contact.title || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'Client': return 'bg-blue-100 text-blue-800';
-      case 'Partner': return 'bg-green-100 text-green-800';
-      case 'Vendor': return 'bg-purple-100 text-purple-800';
+      case 'client': return 'bg-blue-100 text-blue-800';
+      case 'partner': return 'bg-green-100 text-green-800';
+      case 'vendor': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
+            <p className="text-gray-600">Loading contacts...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
+            <p className="text-red-600">Error loading contacts: {error.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
-          <p className="text-gray-600">Manage your business contacts and relationships</p>
+          <p className="text-gray-600">Manage your business contacts and relationships ({contacts.length} total)</p>
         </div>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />
@@ -116,33 +108,37 @@ const Contacts = () => {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="text-lg font-medium">{contact.name}</h3>
-                          <Badge className={getTypeColor(contact.type)}>
-                            {contact.type}
+                          <h3 className="text-lg font-medium">{contact.first_name} {contact.last_name}</h3>
+                          <Badge className={getTypeColor(contact.contact_type)}>
+                            {contact.contact_type}
                           </Badge>
                         </div>
-                        <p className="text-gray-600">{contact.title}</p>
+                        <p className="text-gray-600">{contact.title || 'No title specified'}</p>
                         <div className="flex items-center space-x-1 text-gray-600">
                           <Building2 className="h-4 w-4" />
-                          <span>{contact.company}</span>
+                          <span>{contact.companies?.name || 'No company'}</span>
                         </div>
                         <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                          <div className="flex items-center space-x-1">
-                            <Mail className="h-4 w-4" />
-                            <span>{contact.email}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Phone className="h-4 w-4" />
-                            <span>{contact.phone}</span>
-                          </div>
+                          {contact.email && (
+                            <div className="flex items-center space-x-1">
+                              <Mail className="h-4 w-4" />
+                              <span>{contact.email}</span>
+                            </div>
+                          )}
+                          {contact.phone && (
+                            <div className="flex items-center space-x-1">
+                              <Phone className="h-4 w-4" />
+                              <span>{contact.phone}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-gray-500 mb-2">
-                        Last contact: {contact.lastContact}
+                        Added: {new Date(contact.created_at).toLocaleDateString()}
                       </div>
-                      <Badge variant="outline">{contact.notes} notes</Badge>
+                      <Badge variant="outline">0 notes</Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -156,8 +152,8 @@ const Contacts = () => {
           {selectedContact ? (
             <NotesPanel
               entityType="contact"
-              entityId={selectedContact.id.toString()}
-              entityName={selectedContact.name}
+              entityId={selectedContact.id}
+              entityName={`${selectedContact.first_name} ${selectedContact.last_name}`}
             />
           ) : (
             <Card>

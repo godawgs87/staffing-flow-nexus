@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,72 +6,56 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Mail, User } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import { useCandidates } from '@/hooks/useCandidates';
 
 const Candidates = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
-
-  const candidates = [
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@email.com',
-      position: 'Senior Frontend Developer',
-      experience: '5 years',
-      skills: ['React', 'TypeScript', 'Node.js'],
-      status: 'Active',
-      location: 'New York, NY',
-      lastActivity: '2 days ago'
-    },
-    {
-      id: 2,
-      name: 'Mike Chen',
-      email: 'mike.chen@email.com',
-      position: 'Product Manager',
-      experience: '7 years',
-      skills: ['Product Strategy', 'Agile', 'Analytics'],
-      status: 'Interviewing',
-      location: 'San Francisco, CA',
-      lastActivity: '1 day ago'
-    },
-    {
-      id: 3,
-      name: 'Emma Davis',
-      email: 'emma.davis@email.com',
-      position: 'UX Designer',
-      experience: '4 years',
-      skills: ['Figma', 'User Research', 'Prototyping'],
-      status: 'Placed',
-      location: 'Austin, TX',
-      lastActivity: '5 days ago'
-    },
-    {
-      id: 4,
-      name: 'David Wilson',
-      email: 'david.wilson@email.com',
-      position: 'Data Scientist',
-      experience: '6 years',
-      skills: ['Python', 'Machine Learning', 'SQL'],
-      status: 'Active',
-      location: 'Seattle, WA',
-      lastActivity: '3 hours ago'
-    }
-  ];
+  const { data: candidates = [], isLoading, error } = useCandidates();
 
   const filteredCandidates = candidates.filter(candidate =>
-    candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    candidate.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    candidate.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+    `${candidate.first_name} ${candidate.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (candidate.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (candidate.skills || []).some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active': return 'bg-green-100 text-green-800';
-      case 'Interviewing': return 'bg-blue-100 text-blue-800';
-      case 'Placed': return 'bg-purple-100 text-purple-800';
+      case 'new': return 'bg-gray-100 text-gray-800';
+      case 'screening': return 'bg-blue-100 text-blue-800';
+      case 'interview': return 'bg-yellow-100 text-yellow-800';
+      case 'offer': return 'bg-orange-100 text-orange-800';
+      case 'hired': return 'bg-green-100 text-green-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
+            <p className="text-gray-600">Loading candidates...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
+            <p className="text-red-600">Error loading candidates: {error.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -78,7 +63,7 @@ const Candidates = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Candidates</h1>
-          <p className="text-gray-600">Manage your talent pipeline</p>
+          <p className="text-gray-600">Manage your talent pipeline ({candidates.length} total)</p>
         </div>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />
@@ -126,8 +111,8 @@ const Candidates = () => {
                         <User className="h-6 w-6 text-blue-600" />
                       </div>
                       <div>
-                        <CardTitle className="text-lg">{candidate.name}</CardTitle>
-                        <p className="text-sm text-gray-600">{candidate.position}</p>
+                        <CardTitle className="text-lg">{candidate.first_name} {candidate.last_name}</CardTitle>
+                        <p className="text-sm text-gray-600">{candidate.title || 'No title specified'}</p>
                       </div>
                     </div>
                     <Badge className={getStatusColor(candidate.status)}>
@@ -137,19 +122,26 @@ const Candidates = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <p className="text-sm text-gray-600">Experience: {candidate.experience}</p>
-                    <p className="text-sm text-gray-600">Location: {candidate.location}</p>
-                    <p className="text-sm text-gray-600">Last activity: {candidate.lastActivity}</p>
+                    <p className="text-sm text-gray-600">Experience: {candidate.experience_years || 0} years</p>
+                    <p className="text-sm text-gray-600">Location: {candidate.location || 'Not specified'}</p>
+                    {candidate.salary_expectation_min && candidate.salary_expectation_max && (
+                      <p className="text-sm text-gray-600">
+                        Salary: ${candidate.salary_expectation_min?.toLocaleString()} - ${candidate.salary_expectation_max?.toLocaleString()}
+                      </p>
+                    )}
                   </div>
                   
                   <div>
                     <p className="text-sm font-medium text-gray-900 mb-2">Skills</p>
                     <div className="flex flex-wrap gap-1">
-                      {candidate.skills.map((skill, index) => (
+                      {(candidate.skills || []).map((skill: string, index: number) => (
                         <Badge key={index} variant="secondary" className="text-xs">
                           {skill}
                         </Badge>
                       ))}
+                      {(!candidate.skills || candidate.skills.length === 0) && (
+                        <span className="text-xs text-gray-500">No skills listed</span>
+                      )}
                     </div>
                   </div>
                   
@@ -173,8 +165,8 @@ const Candidates = () => {
           {selectedCandidate ? (
             <NotesPanel
               entityType="candidate"
-              entityId={selectedCandidate.id.toString()}
-              entityName={selectedCandidate.name}
+              entityId={selectedCandidate.id}
+              entityName={`${selectedCandidate.first_name} ${selectedCandidate.last_name}`}
             />
           ) : (
             <Card>

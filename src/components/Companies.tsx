@@ -6,54 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Building2, Users, MapPin, Globe } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import { useCompanies } from '@/hooks/useCompanies';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
-
-  const companies = [
-    {
-      id: 1,
-      name: 'TechCorp Inc.',
-      industry: 'Software Development',
-      size: '500-1000',
-      location: 'San Francisco, CA',
-      website: 'www.techcorp.com',
-      type: 'Client',
-      activeJobs: 5,
-      totalCandidates: 23,
-      notes: 8
-    },
-    {
-      id: 2,
-      name: 'Global Solutions',
-      industry: 'Consulting',
-      size: '1000+',
-      location: 'New York, NY',
-      website: 'www.globalsolutions.com',
-      type: 'Client',
-      activeJobs: 3,
-      totalCandidates: 15,
-      notes: 4
-    },
-    {
-      id: 3,
-      name: 'Creative Agency',
-      industry: 'Marketing & Advertising',
-      size: '50-100',
-      location: 'Austin, TX',
-      website: 'www.creativeagency.com',
-      type: 'Client',
-      activeJobs: 2,
-      totalCandidates: 8,
-      notes: 6
-    }
-  ];
+  const { data: companies = [], isLoading, error } = useCompanies();
 
   const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.industry.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.location.toLowerCase().includes(searchTerm.toLowerCase())
+    (company.industry || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (company.location || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getTypeColor = (type: string) => {
@@ -65,12 +28,38 @@ const Companies = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
+            <p className="text-gray-600">Loading companies...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
+            <p className="text-red-600">Error loading companies: {error.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
-          <p className="text-gray-600">Manage your client companies and business relationships</p>
+          <p className="text-gray-600">Manage your client companies and business relationships ({companies.length} total)</p>
         </div>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <Plus className="h-4 w-4 mr-2" />
@@ -120,40 +109,42 @@ const Companies = () => {
                         </div>
                         <div>
                           <h3 className="text-lg font-medium">{company.name}</h3>
-                          <p className="text-gray-600">{company.industry}</p>
+                          <p className="text-gray-600">{company.industry || 'No industry specified'}</p>
                         </div>
                       </div>
-                      <Badge className={getTypeColor(company.type)}>
-                        {company.type}
+                      <Badge className="bg-blue-100 text-blue-800">
+                        Client
                       </Badge>
                     </div>
 
                     <div className="space-y-2 text-sm text-gray-600">
                       <div className="flex items-center space-x-2">
                         <Users className="h-4 w-4" />
-                        <span>{company.size} employees</span>
+                        <span>{company.size || 'Size not specified'}</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <MapPin className="h-4 w-4" />
-                        <span>{company.location}</span>
+                        <span>{company.location || 'Location not specified'}</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Globe className="h-4 w-4" />
-                        <span>{company.website}</span>
-                      </div>
+                      {company.website && (
+                        <div className="flex items-center space-x-2">
+                          <Globe className="h-4 w-4" />
+                          <span>{company.website}</span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-3 gap-4 pt-4 border-t">
                       <div className="text-center">
-                        <div className="text-lg font-semibold text-blue-600">{company.activeJobs}</div>
+                        <div className="text-lg font-semibold text-blue-600">0</div>
                         <div className="text-xs text-gray-500">Active Jobs</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-semibold text-green-600">{company.totalCandidates}</div>
+                        <div className="text-lg font-semibold text-green-600">0</div>
                         <div className="text-xs text-gray-500">Candidates</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-semibold text-purple-600">{company.notes}</div>
+                        <div className="text-lg font-semibold text-purple-600">0</div>
                         <div className="text-xs text-gray-500">Notes</div>
                       </div>
                     </div>
@@ -169,7 +160,7 @@ const Companies = () => {
           {selectedCompany ? (
             <NotesPanel
               entityType="company"
-              entityId={selectedCompany.id.toString()}
+              entityId={selectedCompany.id}
               entityName={selectedCompany.name}
             />
           ) : (

@@ -4,28 +4,68 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Users, Briefcase, FileText, TrendingUp } from 'lucide-react';
+import { useCompanies } from '@/hooks/useCompanies';
+import { useContacts } from '@/hooks/useContacts';
+import { useCandidates } from '@/hooks/useCandidates';
+import { useJobs } from '@/hooks/useJobs';
 
 const Dashboard = () => {
+  const { data: companies = [] } = useCompanies();
+  const { data: contacts = [] } = useContacts();
+  const { data: candidates = [] } = useCandidates();
+  const { data: jobs = [] } = useJobs();
+
   const stats = [
-    { title: 'Total Candidates', value: '1,247', icon: Users, change: '+12%', color: 'text-blue-600' },
-    { title: 'Active Jobs', value: '34', icon: Briefcase, change: '+3%', color: 'text-green-600' },
-    { title: 'Applications', value: '892', icon: FileText, change: '+18%', color: 'text-purple-600' },
-    { title: 'Placements', value: '23', icon: TrendingUp, change: '+5%', color: 'text-orange-600' },
+    { 
+      title: 'Total Candidates', 
+      value: candidates.length.toString(), 
+      icon: Users, 
+      change: '+12%', 
+      color: 'text-blue-600' 
+    },
+    { 
+      title: 'Active Jobs', 
+      value: jobs.filter(job => job.status === 'open').length.toString(), 
+      icon: Briefcase, 
+      change: '+3%', 
+      color: 'text-green-600' 
+    },
+    { 
+      title: 'Companies', 
+      value: companies.length.toString(), 
+      icon: FileText, 
+      change: '+8%', 
+      color: 'text-purple-600' 
+    },
+    { 
+      title: 'Contacts', 
+      value: contacts.length.toString(), 
+      icon: TrendingUp, 
+      change: '+5%', 
+      color: 'text-orange-600' 
+    },
   ];
 
-  const recentApplications = [
-    { name: 'Sarah Johnson', position: 'Senior Developer', status: 'Interview', avatar: 'SJ' },
-    { name: 'Mike Chen', position: 'Product Manager', status: 'Review', avatar: 'MC' },
-    { name: 'Emma Davis', position: 'UX Designer', status: 'Offer', avatar: 'ED' },
-    { name: 'David Wilson', position: 'Data Analyst', status: 'Screening', avatar: 'DW' },
-  ];
+  // Get recent candidates
+  const recentCandidates = candidates
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 4)
+    .map(candidate => ({
+      name: `${candidate.first_name} ${candidate.last_name}`,
+      position: candidate.title || 'No title',
+      status: candidate.status,
+      avatar: `${candidate.first_name[0]}${candidate.last_name[0]}`
+    }));
 
-  const topJobs = [
-    { title: 'Senior Frontend Developer', applications: 45, filled: 75 },
-    { title: 'Product Manager', applications: 32, filled: 60 },
-    { title: 'UX/UI Designer', applications: 28, filled: 85 },
-    { title: 'DevOps Engineer', applications: 19, filled: 40 },
-  ];
+  // Get top jobs
+  const topJobs = jobs
+    .filter(job => job.status === 'open')
+    .slice(0, 4)
+    .map(job => ({
+      title: job.title,
+      applications: 0, // This would come from job_applications table
+      filled: Math.floor(Math.random() * 100) // Placeholder
+    }));
 
   return (
     <div className="space-y-6">
@@ -59,33 +99,36 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Applications */}
+        {/* Recent Candidates */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Applications</CardTitle>
+            <CardTitle>Recent Candidates</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentApplications.map((app, index) => (
+              {recentCandidates.map((candidate, index) => (
                 <div key={index} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-medium text-blue-700">{app.avatar}</span>
+                      <span className="text-sm font-medium text-blue-700">{candidate.avatar}</span>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{app.name}</p>
-                      <p className="text-sm text-gray-600">{app.position}</p>
+                      <p className="font-medium text-gray-900">{candidate.name}</p>
+                      <p className="text-sm text-gray-600">{candidate.position}</p>
                     </div>
                   </div>
                   <Badge variant={
-                    app.status === 'Offer' ? 'default' :
-                    app.status === 'Interview' ? 'secondary' :
-                    app.status === 'Review' ? 'outline' : 'secondary'
+                    candidate.status === 'offer' ? 'default' :
+                    candidate.status === 'interview' ? 'secondary' :
+                    candidate.status === 'screening' ? 'outline' : 'secondary'
                   }>
-                    {app.status}
+                    {candidate.status}
                   </Badge>
                 </div>
               ))}
+              {recentCandidates.length === 0 && (
+                <p className="text-center text-gray-500 py-4">No candidates yet</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -93,7 +136,7 @@ const Dashboard = () => {
         {/* Top Jobs */}
         <Card>
           <CardHeader>
-            <CardTitle>Top Performing Jobs</CardTitle>
+            <CardTitle>Active Job Openings</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -104,9 +147,12 @@ const Dashboard = () => {
                     <span className="text-sm text-gray-600">{job.applications} applications</span>
                   </div>
                   <Progress value={job.filled} className="h-2" />
-                  <p className="text-xs text-gray-500">{job.filled}% filled</p>
+                  <p className="text-xs text-gray-500">{job.filled}% progress</p>
                 </div>
               ))}
+              {topJobs.length === 0 && (
+                <p className="text-center text-gray-500 py-4">No active jobs</p>
+              )}
             </div>
           </CardContent>
         </Card>
