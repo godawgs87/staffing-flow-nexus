@@ -48,7 +48,7 @@ const Contacts = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
@@ -61,7 +61,7 @@ const Contacts = () => {
 
   if (error) {
     return (
-      <div className="space-y-6">
+      <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
@@ -73,122 +73,120 @@ const Contacts = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
-          <p className="text-gray-600">Manage your business contacts and relationships ({contacts.length} total)</p>
+    <div className="flex h-full w-full">
+      {/* Main Content - Left Side */}
+      <div className="flex-1 p-6 space-y-6 overflow-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
+            <p className="text-gray-600">Manage your business contacts and relationships ({contacts.length} total)</p>
+          </div>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Contact
+          </Button>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Contact
-        </Button>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Search and Filters */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex space-x-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search contacts by name, company, or title..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <Button variant="outline">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filters
-                </Button>
+        {/* Search and Filters */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex space-x-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search contacts by name, company, or title..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
               </div>
-            </CardContent>
-          </Card>
+              <Button variant="outline">
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Contacts List */}
-          <div className="space-y-4">
-            {filteredContacts.map((contact) => (
-              <Card 
-                key={contact.id} 
-                className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
-                  selectedContact?.id === contact.id ? 'ring-2 ring-blue-500' : ''
-                }`}
-                onClick={() => setSelectedContact(contact)}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <User className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <h3 className="text-lg font-medium">{contact.first_name} {contact.last_name}</h3>
-                          <Badge className={getTypeColor(contact.contact_type)}>
-                            {contact.contact_type}
-                          </Badge>
-                        </div>
-                        <p className="text-gray-600">{contact.title || 'No title specified'}</p>
-                        <div className="flex items-center space-x-1 text-gray-600">
-                          <Building2 className="h-4 w-4" />
-                          <span>{contact.companies?.name || 'No company'}</span>
-                        </div>
-                        <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                          {contact.email && (
-                            <div className="flex items-center space-x-1">
-                              <Mail className="h-4 w-4" />
-                              <span>{contact.email}</span>
-                            </div>
-                          )}
-                          {contact.phone && (
-                            <div className="flex items-center space-x-1">
-                              <Phone className="h-4 w-4" />
-                              <span>{contact.phone}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+        {/* Contacts List */}
+        <div className="space-y-4">
+          {filteredContacts.map((contact) => (
+            <Card 
+              key={contact.id} 
+              className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
+                selectedContact?.id === contact.id ? 'ring-2 ring-blue-500' : ''
+              }`}
+              onClick={() => setSelectedContact(contact)}
+            >
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                      <User className="h-6 w-6 text-blue-600" />
                     </div>
-                    <div className="flex space-x-1">
-                      <Button size="sm" variant="ghost" onClick={(e) => {
-                        e.stopPropagation();
-                        openModal('view', contact);
-                      }}>
-                        View
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={(e) => {
-                        e.stopPropagation();
-                        openModal('edit', contact);
-                      }}>
-                        Edit
-                      </Button>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="text-lg font-medium">{contact.first_name} {contact.last_name}</h3>
+                        <Badge className={getTypeColor(contact.contact_type)}>
+                          {contact.contact_type}
+                        </Badge>
+                      </div>
+                      <p className="text-gray-600">{contact.title || 'No title specified'}</p>
+                      <div className="flex items-center space-x-1 text-gray-600 mt-1">
+                        <Building2 className="h-4 w-4" />
+                        <span>{contact.companies?.name || 'No company'}</span>
+                      </div>
+                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                        {contact.email && (
+                          <div className="flex items-center space-x-1">
+                            <Mail className="h-4 w-4" />
+                            <span>{contact.email}</span>
+                          </div>
+                        )}
+                        {contact.phone && (
+                          <div className="flex items-center space-x-1">
+                            <Phone className="h-4 w-4" />
+                            <span>{contact.phone}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Details Panel */}
-        <div className="lg:col-span-1">
-          {selectedContact ? (
-            <ContactDetails
-              contact={selectedContact}
-              onEdit={() => openModal('edit', selectedContact)}
-            />
-          ) : (
-            <Card>
-              <CardContent className="p-6 text-center text-gray-500">
-                <User className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>Select a contact to view full details</p>
+                  <div className="flex space-x-1">
+                    <Button size="sm" variant="ghost" onClick={(e) => {
+                      e.stopPropagation();
+                      openModal('view', contact);
+                    }}>
+                      View
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={(e) => {
+                      e.stopPropagation();
+                      openModal('edit', contact);
+                    }}>
+                      Edit
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-          )}
+          ))}
         </div>
+      </div>
+
+      {/* Details Panel - Right Side */}
+      <div className="w-96 border-l bg-white flex-shrink-0 overflow-auto">
+        {selectedContact ? (
+          <ContactDetails
+            contact={selectedContact}
+            onEdit={() => openModal('edit', selectedContact)}
+          />
+        ) : (
+          <div className="p-6 text-center text-gray-500 h-full flex flex-col justify-center">
+            <User className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <p>Select a contact to view full details</p>
+          </div>
+        )}
       </div>
 
       <ContactModal

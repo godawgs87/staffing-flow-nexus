@@ -94,9 +94,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
           {/* Navigation groups */}
           {navigationGroups.map((group) => (
-            <div key={group.title} className="mb-8">
+            <div key={group.title} className="mb-6">
               {sidebarOpen && (
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-3">
                   {group.title}
                 </h3>
               )}
@@ -107,13 +107,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     <li key={item.name}>
                       <Link
                         to={item.href}
-                        className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                           isActive(item.href)
                             ? 'bg-blue-50 text-blue-700'
                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                         }`}
                       >
-                        <Icon className="h-5 w-5 flex-shrink-0" />
+                        <Icon className="h-4 w-4 flex-shrink-0" />
                         {sidebarOpen && <span className="ml-3">{item.name}</span>}
                       </Link>
                     </li>
@@ -166,9 +166,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </header>
 
-        {/* Main Content - Full width utilization */}
-        <main className="flex-1 p-6 overflow-auto w-full">
-          <div className="w-full max-w-none">
+        {/* Main Content - Full width utilization with no padding */}
+        <main className="flex-1 overflow-auto w-full bg-gray-50">
+          <div className="w-full h-full">
             {children}
           </div>
         </main>

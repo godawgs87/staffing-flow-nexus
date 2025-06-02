@@ -74,7 +74,7 @@ const Companies = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
@@ -87,7 +87,7 @@ const Companies = () => {
 
   if (error) {
     return (
-      <div className="space-y-6">
+      <div className="p-6 space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
@@ -99,138 +99,138 @@ const Companies = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
-          <p className="text-gray-600">Manage your client companies and business relationships ({companies.length} total)</p>
+    <div className="flex h-full w-full">
+      {/* Main Content - Left Side */}
+      <div className="flex-1 p-6 space-y-6 overflow-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
+            <p className="text-gray-600">Manage your client companies and business relationships ({companies.length} total)</p>
+          </div>
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Company
+          </Button>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Company
-        </Button>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {/* Search and Filters */}
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex space-x-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    placeholder="Search companies by name, industry, or location..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <Button variant="outline">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filters
-                </Button>
+        {/* Search and Filters */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex space-x-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search companies by name, industry, or location..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
               </div>
-            </CardContent>
-          </Card>
+              <Button variant="outline">
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Companies Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredCompanies.map((company) => {
-              const stats = getCompanyStats(company.id);
-              
-              return (
-                <Card 
-                  key={company.id} 
-                  className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
-                    selectedCompany?.id === company.id ? 'ring-2 ring-blue-500' : ''
-                  }`}
-                  onClick={() => setSelectedCompany(company)}
-                >
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-3">
-                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <Building2 className="h-6 w-6 text-blue-600" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-medium">{company.name}</h3>
-                            <p className="text-gray-600">{company.industry || 'No industry specified'}</p>
-                          </div>
-                        </div>
-                        <div className="flex space-x-1">
-                          <Button size="sm" variant="ghost" onClick={(e) => {
-                            e.stopPropagation();
-                            openModal('view', company);
-                          }}>
-                            View
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={(e) => {
-                            e.stopPropagation();
-                            openModal('edit', company);
-                          }}>
-                            Edit
-                          </Button>
-                        </div>
+        {/* Companies List */}
+        <div className="space-y-4">
+          {filteredCompanies.map((company) => {
+            const stats = getCompanyStats(company.id);
+            
+            return (
+              <Card 
+                key={company.id} 
+                className={`hover:shadow-lg transition-all duration-200 cursor-pointer ${
+                  selectedCompany?.id === company.id ? 'ring-2 ring-blue-500' : ''
+                }`}
+                onClick={() => setSelectedCompany(company)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-4 flex-1">
+                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Building2 className="h-6 w-6 text-blue-600" />
                       </div>
-
-                      <div className="space-y-2 text-sm text-gray-600">
-                        <div className="flex items-center space-x-2">
-                          <Users className="h-4 w-4" />
-                          <span>{company.size || 'Size not specified'}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>{company.location || 'Location not specified'}</span>
-                        </div>
-                        {company.website && (
+                      <div className="flex-1">
+                        <h3 className="text-lg font-medium mb-1">{company.name}</h3>
+                        <p className="text-gray-600 mb-3">{company.industry || 'No industry specified'}</p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500 mb-4">
                           <div className="flex items-center space-x-2">
-                            <Globe className="h-4 w-4" />
-                            <span>{company.website}</span>
+                            <Users className="h-4 w-4" />
+                            <span>{company.size || 'Size not specified'}</span>
                           </div>
-                        )}
-                      </div>
+                          <div className="flex items-center space-x-2">
+                            <MapPin className="h-4 w-4" />
+                            <span>{company.location || 'Location not specified'}</span>
+                          </div>
+                          {company.website && (
+                            <div className="flex items-center space-x-2">
+                              <Globe className="h-4 w-4" />
+                              <span className="truncate">{company.website}</span>
+                            </div>
+                          )}
+                        </div>
 
-                      <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-blue-600">{stats.activeJobs}</div>
-                          <div className="text-xs text-gray-500">Active Jobs</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-green-600">{stats.totalContacts}</div>
-                          <div className="text-xs text-gray-500">Contacts</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-purple-600">{stats.notesCount}</div>
-                          <div className="text-xs text-gray-500">Notes</div>
+                        <div className="grid grid-cols-4 gap-4">
+                          <div className="text-center p-3 bg-blue-50 rounded-lg">
+                            <div className="text-lg font-semibold text-blue-600">{stats.activeJobs}</div>
+                            <div className="text-xs text-gray-500">Active Jobs</div>
+                          </div>
+                          <div className="text-center p-3 bg-green-50 rounded-lg">
+                            <div className="text-lg font-semibold text-green-600">{stats.totalContacts}</div>
+                            <div className="text-xs text-gray-500">Contacts</div>
+                          </div>
+                          <div className="text-center p-3 bg-orange-50 rounded-lg">
+                            <div className="text-lg font-semibold text-orange-600">{stats.totalJobs}</div>
+                            <div className="text-xs text-gray-500">Total Jobs</div>
+                          </div>
+                          <div className="text-center p-3 bg-purple-50 rounded-lg">
+                            <div className="text-lg font-semibold text-purple-600">{stats.notesCount}</div>
+                            <div className="text-xs text-gray-500">Notes</div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+                    <div className="flex space-x-1">
+                      <Button size="sm" variant="ghost" onClick={(e) => {
+                        e.stopPropagation();
+                        openModal('view', company);
+                      }}>
+                        View
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={(e) => {
+                        e.stopPropagation();
+                        openModal('edit', company);
+                      }}>
+                        Edit
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
+      </div>
 
-        {/* Details Panel */}
-        <div className="lg:col-span-1">
-          {selectedCompany ? (
-            <CompanyDetails
-              company={selectedCompany}
-              onEdit={() => openModal('edit', selectedCompany)}
-              stats={getCompanyStats(selectedCompany.id)}
-            />
-          ) : (
-            <Card>
-              <CardContent className="p-6 text-center text-gray-500">
-                <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p>Select a company to view full details</p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+      {/* Details Panel - Right Side */}
+      <div className="w-96 border-l bg-white flex-shrink-0 overflow-auto">
+        {selectedCompany ? (
+          <CompanyDetails
+            company={selectedCompany}
+            onEdit={() => openModal('edit', selectedCompany)}
+            stats={getCompanyStats(selectedCompany.id)}
+          />
+        ) : (
+          <div className="p-6 text-center text-gray-500 h-full flex flex-col justify-center">
+            <Building2 className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <p>Select a company to view full details</p>
+          </div>
+        )}
       </div>
 
       <CompanyModal
