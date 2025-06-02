@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { User, Mail, Phone, MapPin, Calendar, DollarSign, Edit, ExternalLink, Linkedin, Globe, X, Building2 } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import CandidateApplicationHistory from './candidates/CandidateApplicationHistory';
+import CandidatePipelineStatus from './candidates/CandidatePipelineStatus';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CandidateDetailsProps {
@@ -57,7 +59,35 @@ const CandidateDetails = ({ candidate, onEdit, onClose }: CandidateDetailsProps)
           </div>
         </div>
 
-        {/* Information - Compact Layout */}
+        {/* Quick Links */}
+        <div className="flex items-center space-x-2 mb-4">
+          {candidate.linkedin_url && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={candidate.linkedin_url} target="_blank" rel="noopener noreferrer">
+                <Linkedin className="h-3 w-3 mr-1" />
+                LinkedIn
+              </a>
+            </Button>
+          )}
+          {candidate.resume_url && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={candidate.resume_url} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-3 w-3 mr-1" />
+                Resume
+              </a>
+            </Button>
+          )}
+          {candidate.portfolio_url && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={candidate.portfolio_url} target="_blank" rel="noopener noreferrer">
+                <Globe className="h-3 w-3 mr-1" />
+                Portfolio
+              </a>
+            </Button>
+          )}
+        </div>
+
+        {/* Contact Information - Compact Layout */}
         <div className="space-y-2">
           {candidate.companies && (
             <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded text-sm">
@@ -119,30 +149,6 @@ const CandidateDetails = ({ candidate, onEdit, onClose }: CandidateDetailsProps)
               </div>
             </div>
           )}
-          
-          {candidate.linkedin_url && (
-            <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded text-sm">
-              <Linkedin className="h-4 w-4 text-blue-600" />
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">LinkedIn</p>
-                <a href={candidate.linkedin_url} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center">
-                  Profile <ExternalLink className="h-3 w-3 ml-1" />
-                </a>
-              </div>
-            </div>
-          )}
-          
-          {candidate.portfolio_url && (
-            <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded text-sm">
-              <Globe className="h-4 w-4 text-gray-400" />
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">Portfolio</p>
-                <a href={candidate.portfolio_url} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center">
-                  View Portfolio <ExternalLink className="h-3 w-3 ml-1" />
-                </a>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Skills Section */}
@@ -160,8 +166,15 @@ const CandidateDetails = ({ candidate, onEdit, onClose }: CandidateDetailsProps)
         )}
       </div>
 
-      {/* Notes Section */}
-      <div className="flex-1 overflow-hidden">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Pipeline Status */}
+        <CandidatePipelineStatus candidate={candidate} />
+        
+        {/* Application History */}
+        <CandidateApplicationHistory candidateId={candidate.id} />
+        
+        {/* Notes Section */}
         <NotesPanel
           entityType="candidate"
           entityId={candidate.id}

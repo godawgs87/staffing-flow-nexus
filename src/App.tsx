@@ -11,6 +11,7 @@ import Companies from "./components/Companies";
 import Jobs from "./components/Jobs";
 import Projects from "./components/Projects";
 import Pipeline from "./components/Pipeline";
+import ApplicationsPipeline from "./components/ApplicationsPipeline";
 import SalesPipeline from "./components/SalesPipeline";
 import ContractIntelligence from "./components/ContractIntelligence";
 import ComplianceManagement from "./components/ComplianceManagement";
@@ -38,7 +39,7 @@ function App() {
                 <Route path="/companies" element={<Companies />} />
                 <Route path="/jobs" element={<Jobs />} />
                 <Route path="/projects" element={<Projects />} />
-                <Route path="/pipeline" element={<Pipeline />} />
+                <Route path="/pipeline" element={<ApplicationsPipeline />} />
                 <Route path="/sales" element={<SalesPipeline />} />
                 <Route path="/contracts" element={<ContractIntelligence />} />
                 <Route path="/compliance" element={<ComplianceManagement />} />
