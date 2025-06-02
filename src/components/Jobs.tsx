@@ -4,11 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Plus, MapPin, Clock, Users } from 'lucide-react';
+import { Plus, MapPin, Clock, Users, Eye, Edit } from 'lucide-react';
+import JobModal from './modals/JobModal';
 import { useJobs } from '@/hooks/useJobs';
 import { useCandidates } from '@/hooks/useCandidates';
 
 const Jobs = () => {
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: 'add' | 'edit' | 'view';
+    job?: any;
+  }>({
+    isOpen: false,
+    mode: 'add',
+  });
+
   const { data: jobs = [], isLoading, error } = useJobs();
   const { data: candidates = [] } = useCandidates();
 
@@ -37,6 +47,14 @@ const Jobs = () => {
       case 'part-time': return 'bg-purple-100 text-purple-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const openModal = (mode: 'add' | 'edit' | 'view', job?: any) => {
+    setModalState({ isOpen: true, mode, job });
+  };
+
+  const closeModal = () => {
+    setModalState({ isOpen: false, mode: 'add' });
   };
 
   if (isLoading) {
@@ -77,7 +95,7 @@ const Jobs = () => {
           <h1 className="text-2xl font-bold text-gray-900">Job Openings</h1>
           <p className="text-gray-600">Manage your open positions and requirements ({jobs.length} total)</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
           <Plus className="h-4 w-4 mr-2" />
           Post New Job
         </Button>
@@ -176,8 +194,21 @@ const Jobs = () => {
                           <Button variant="outline" size="sm">
                             View Applications
                           </Button>
-                          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                            Edit Job
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => openModal('view', job)}
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            className="bg-blue-600 hover:bg-blue-700"
+                            onClick={() => openModal('edit', job)}
+                          >
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
                           </Button>
                         </div>
                       </div>
@@ -189,6 +220,13 @@ const Jobs = () => {
           );
         })}
       </div>
+
+      <JobModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        job={modalState.job}
+        mode={modalState.mode}
+      />
     </div>
   );
 };

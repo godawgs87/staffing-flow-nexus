@@ -6,16 +6,42 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Filter, Plus, Building2, Users, MapPin, Globe } from 'lucide-react';
 import NotesPanel from './notes/NotesPanel';
+import CompanyModal from './modals/CompanyModal';
 import { useCompanies } from '@/hooks/useCompanies';
 import { useJobs } from '@/hooks/useJobs';
 import { useContacts } from '@/hooks/useContacts';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 const Companies = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: 'add' | 'edit' | 'view';
+    company?: any;
+  }>({
+    isOpen: false,
+    mode: 'add',
+  });
+
   const { data: companies = [], isLoading, error } = useCompanies();
   const { data: jobs = [] } = useJobs();
   const { data: contacts = [] } = useContacts();
+
+  // Fetch notes count for each company
+  const { data: notesData = [] } = useQuery({
+    queryKey: ['notes', 'company'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('notes')
+        .select('entity_id')
+        .eq('entity_type', 'company');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -28,21 +54,22 @@ const Companies = () => {
     const companyJobs = jobs.filter(job => job.company_id === companyId);
     const activeJobs = companyJobs.filter(job => job.status === 'open').length;
     const companyContacts = contacts.filter(contact => contact.company_id === companyId).length;
+    const notesCount = notesData.filter(note => note.entity_id === companyId).length;
     
     return {
       activeJobs,
       totalContacts: companyContacts,
-      totalJobs: companyJobs.length
+      totalJobs: companyJobs.length,
+      notesCount
     };
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Client': return 'bg-blue-100 text-blue-800';
-      case 'Partner': return 'bg-green-100 text-green-800';
-      case 'Vendor': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const openModal = (mode: 'add' | 'edit' | 'view', company?: any) => {
+    setModalState({ isOpen: true, mode, company });
+  };
+
+  const closeModal = () => {
+    setModalState({ isOpen: false, mode: 'add' });
   };
 
   if (isLoading) {
@@ -78,7 +105,7 @@ const Companies = () => {
           <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
           <p className="text-gray-600">Manage your client companies and business relationships ({companies.length} total)</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => openModal('add')}>
           <Plus className="h-4 w-4 mr-2" />
           Add Company
         </Button>
@@ -132,9 +159,20 @@ const Companies = () => {
                             <p className="text-gray-600">{company.industry || 'No industry specified'}</p>
                           </div>
                         </div>
-                        <Badge className="bg-blue-100 text-blue-800">
-                          Client
-                        </Badge>
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="ghost" onClick={(e) => {
+                            e.stopPropagation();
+                            openModal('view', company);
+                          }}>
+                            View
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={(e) => {
+                            e.stopPropagation();
+                            openModal('edit', company);
+                          }}>
+                            Edit
+                          </Button>
+                        </div>
                       </div>
 
                       <div className="space-y-2 text-sm text-gray-600">
@@ -164,7 +202,7 @@ const Companies = () => {
                           <div className="text-xs text-gray-500">Contacts</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-lg font-semibold text-purple-600">0</div>
+                          <div className="text-lg font-semibold text-purple-600">{stats.notesCount}</div>
                           <div className="text-xs text-gray-500">Notes</div>
                         </div>
                       </div>
@@ -194,6 +232,13 @@ const Companies = () => {
           )}
         </div>
       </div>
+
+      <CompanyModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        company={modalState.company}
+        mode={modalState.mode}
+      />
     </div>
   );
 };

@@ -8,12 +8,27 @@ import { useCompanies } from '@/hooks/useCompanies';
 import { useContacts } from '@/hooks/useContacts';
 import { useCandidates } from '@/hooks/useCandidates';
 import { useJobs } from '@/hooks/useJobs';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 const Dashboard = () => {
   const { data: companies = [] } = useCompanies();
   const { data: contacts = [] } = useContacts();
   const { data: candidates = [] } = useCandidates();
   const { data: jobs = [] } = useJobs();
+
+  // Fetch notes count
+  const { data: notesData = [] } = useQuery({
+    queryKey: ['notes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('notes')
+        .select('id');
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
   const stats = [
     { 
@@ -38,10 +53,10 @@ const Dashboard = () => {
       color: 'text-purple-600' 
     },
     { 
-      title: 'Contacts', 
-      value: contacts.length.toString(), 
+      title: 'Total Notes', 
+      value: notesData.length.toString(), 
       icon: TrendingUp, 
-      change: '+5%', 
+      change: '+15%', 
       color: 'text-orange-600' 
     },
   ];
