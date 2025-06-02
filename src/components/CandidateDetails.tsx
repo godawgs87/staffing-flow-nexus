@@ -24,10 +24,10 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
   };
 
   return (
-    <div className="h-full w-full space-y-6">
-      {/* Header Section - Full width */}
-      <div className="bg-white rounded-lg shadow-sm border p-6 w-full">
-        <div className="flex items-start justify-between mb-4">
+    <div className="w-full space-y-6">
+      {/* Header Section */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
               <User className="h-8 w-8 text-blue-600" />
@@ -46,46 +46,50 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
           </Button>
         </div>
 
-        {/* Information Grid - Full width utilization */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 w-full">
+        {/* Information - Vertical List Layout */}
+        <div className="space-y-4">
           {candidate.email && (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
               <Mail className="h-5 w-5 text-gray-400" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500">Email</p>
                 <p className="font-medium">{candidate.email}</p>
               </div>
             </div>
           )}
+          
           {candidate.phone && (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
               <Phone className="h-5 w-5 text-gray-400" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500">Phone</p>
                 <p className="font-medium">{candidate.phone}</p>
               </div>
             </div>
           )}
+          
           {candidate.location && (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
               <MapPin className="h-5 w-5 text-gray-400" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500">Location</p>
                 <p className="font-medium">{candidate.location}</p>
               </div>
             </div>
           )}
-          <div className="flex items-center space-x-3">
+          
+          <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
             <Calendar className="h-5 w-5 text-gray-400" />
-            <div>
+            <div className="flex-1">
               <p className="text-sm text-gray-500">Experience</p>
               <p className="font-medium">{candidate.experience_years || 0} years</p>
             </div>
           </div>
+          
           {(candidate.salary_expectation_min || candidate.salary_expectation_max) && (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
               <DollarSign className="h-5 w-5 text-gray-400" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500">Salary Expectation</p>
                 <p className="font-medium">
                   ${candidate.salary_expectation_min?.toLocaleString() || 'N/A'} - 
@@ -94,10 +98,11 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
               </div>
             </div>
           )}
+          
           {candidate.linkedin_url && (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
               <Linkedin className="h-5 w-5 text-blue-600" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500">LinkedIn</p>
                 <a href={candidate.linkedin_url} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center">
                   Profile <ExternalLink className="h-3 w-3 ml-1" />
@@ -105,10 +110,11 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
               </div>
             </div>
           )}
+          
           {candidate.portfolio_url && (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
               <Globe className="h-5 w-5 text-gray-400" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500">Portfolio</p>
                 <a href={candidate.portfolio_url} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-600 hover:underline flex items-center">
                   View Portfolio <ExternalLink className="h-3 w-3 ml-1" />
@@ -118,9 +124,9 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
           )}
         </div>
 
-        {/* Skills Section - Full width */}
+        {/* Skills Section */}
         {candidate.skills && candidate.skills.length > 0 && (
-          <div className="mt-6 w-full">
+          <div className="mt-6 pt-6 border-t">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Skills</h3>
             <div className="flex flex-wrap gap-2">
               {candidate.skills.map((skill: string, index: number) => (
@@ -133,7 +139,7 @@ const CandidateDetails = ({ candidate, onEdit }: CandidateDetailsProps) => {
         )}
       </div>
 
-      {/* Notes Section - Full width */}
+      {/* Notes Section */}
       <div className="w-full">
         <NotesPanel
           entityType="candidate"

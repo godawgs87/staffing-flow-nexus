@@ -17,9 +17,9 @@ interface CompanyDetailsProps {
 
 const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
   return (
-    <div className="h-full w-full space-y-8">
-      {/* Header Section - Full width */}
-      <div className="bg-white rounded-lg shadow-sm border p-8 w-full">
+    <div className="w-full space-y-6">
+      {/* Header Section */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-6">
             <div className="w-20 h-20 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -36,26 +36,28 @@ const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
           </Button>
         </div>
 
-        {/* Company Information Grid - Full width utilization */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 w-full">
-          <div className="flex items-center space-x-4">
+        {/* Company Information - Vertical List Layout */}
+        <div className="space-y-4">
+          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
             <Users className="h-6 w-6 text-gray-400" />
-            <div>
+            <div className="flex-1">
               <p className="text-sm text-gray-500 font-medium">Company Size</p>
               <p className="font-semibold text-lg">{company.size || 'Size not specified'}</p>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          
+          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
             <MapPin className="h-6 w-6 text-gray-400" />
-            <div>
+            <div className="flex-1">
               <p className="text-sm text-gray-500 font-medium">Location</p>
               <p className="font-semibold text-lg">{company.location || 'Location not specified'}</p>
             </div>
           </div>
+          
           {company.website && (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
               <Globe className="h-6 w-6 text-gray-400" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500 font-medium">Website</p>
                 <a href={company.website} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg text-blue-600 hover:underline flex items-center">
                   Visit Website <ExternalLink className="h-4 w-4 ml-2" />
@@ -65,11 +67,11 @@ const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
           )}
         </div>
 
-        {/* Stats - Full width */}
+        {/* Stats */}
         {stats && (
-          <div className="mt-8 pt-8 border-t w-full">
+          <div className="mt-6 pt-6 border-t">
             <h3 className="text-lg font-semibold text-gray-700 mb-4">Company Stats</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <div className="text-3xl font-bold text-blue-600">{stats.activeJobs}</div>
                 <div className="text-sm text-gray-600 font-medium">Active Jobs</div>
@@ -90,16 +92,16 @@ const CompanyDetails = ({ company, onEdit, stats }: CompanyDetailsProps) => {
           </div>
         )}
 
-        {/* Description - Full width */}
+        {/* Description */}
         {company.description && (
-          <div className="mt-8 pt-8 border-t w-full">
+          <div className="mt-6 pt-6 border-t">
             <h3 className="text-lg font-semibold text-gray-700 mb-3">Description</h3>
             <p className="text-gray-700 leading-relaxed">{company.description}</p>
           </div>
         )}
       </div>
 
-      {/* Notes Section - Full width */}
+      {/* Notes Section */}
       <div className="w-full">
         <NotesPanel
           entityType="company"

@@ -107,7 +107,7 @@ const AuthPage = () => {
           </div>
           <div className="mt-6 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700 font-medium">Test Account:</p>
-            <p className="text-xs text-blue-600">Email: admin@test.com</p>
+            <p className="text-xs text-blue-600">Email: test@test.com</p>
             <p className="text-xs text-blue-600">Password: admin1234!</p>
           </div>
         </CardContent>

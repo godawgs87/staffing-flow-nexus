@@ -21,9 +21,9 @@ const ContactDetails = ({ contact, onEdit }: ContactDetailsProps) => {
   };
 
   return (
-    <div className="h-full w-full space-y-8">
-      {/* Header Section - Full width */}
-      <div className="bg-white rounded-lg shadow-sm border p-8 w-full">
+    <div className="w-full space-y-6">
+      {/* Header Section */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-6">
             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center">
@@ -43,37 +43,40 @@ const ContactDetails = ({ contact, onEdit }: ContactDetailsProps) => {
           </Button>
         </div>
 
-        {/* Contact Information Grid - Full width utilization */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 w-full">
+        {/* Contact Information - Vertical List Layout */}
+        <div className="space-y-4">
           {contact.email && (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
               <Mail className="h-6 w-6 text-gray-400" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500 font-medium">Email</p>
                 <p className="font-semibold text-lg">{contact.email}</p>
               </div>
             </div>
           )}
+          
           {contact.phone && (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
               <Phone className="h-6 w-6 text-gray-400" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500 font-medium">Phone</p>
                 <p className="font-semibold text-lg">{contact.phone}</p>
               </div>
             </div>
           )}
-          <div className="flex items-center space-x-4">
+          
+          <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
             <Building2 className="h-6 w-6 text-gray-400" />
-            <div>
+            <div className="flex-1">
               <p className="text-sm text-gray-500 font-medium">Company</p>
               <p className="font-semibold text-lg">{contact.companies?.name || 'No company assigned'}</p>
             </div>
           </div>
+          
           {contact.linkedin_url && (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
               <Linkedin className="h-6 w-6 text-blue-600" />
-              <div>
+              <div className="flex-1">
                 <p className="text-sm text-gray-500 font-medium">LinkedIn</p>
                 <a href={contact.linkedin_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg text-blue-600 hover:underline flex items-center">
                   Profile <ExternalLink className="h-4 w-4 ml-2" />
@@ -84,7 +87,7 @@ const ContactDetails = ({ contact, onEdit }: ContactDetailsProps) => {
         </div>
       </div>
 
-      {/* Notes Section - Full width */}
+      {/* Notes Section */}
       <div className="w-full">
         <NotesPanel
           entityType="contact"

@@ -78,14 +78,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex w-full">
       {/* Sidebar */}
       <nav className={`${
         sidebarOpen ? 'w-64' : 'w-16'
       } bg-white shadow-sm border-r min-h-screen transition-all duration-300 flex-shrink-0`}>
-        <div className="p-3">
+        <div className="p-4">
           {/* Logo and title */}
-          <div className="flex items-center space-x-3 mb-6 px-2">
+          <div className="flex items-center space-x-3 mb-8">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <Users className="h-5 w-5 text-white" />
             </div>
@@ -94,9 +94,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
           {/* Navigation groups */}
           {navigationGroups.map((group) => (
-            <div key={group.title} className="mb-6">
+            <div key={group.title} className="mb-8">
               {sidebarOpen && (
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                   {group.title}
                 </h3>
               )}
@@ -107,14 +107,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     <li key={item.name}>
                       <Link
                         to={item.href}
-                        className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                           isActive(item.href)
-                            ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
+                            ? 'bg-blue-50 text-blue-700'
                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                         }`}
                       >
                         <Icon className="h-5 w-5 flex-shrink-0" />
-                        {sidebarOpen && <span className="ml-3 text-left">{item.name}</span>}
+                        {sidebarOpen && <span className="ml-3">{item.name}</span>}
                       </Link>
                     </li>
                   );
@@ -126,7 +126,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </nav>
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Header */}
         <header className="bg-white shadow-sm border-b flex-shrink-0">
           <div className="flex items-center justify-between px-6 py-4">
@@ -167,8 +167,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         </header>
 
         {/* Main Content - Full width utilization */}
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="h-full w-full">
+        <main className="flex-1 p-6 overflow-auto w-full">
+          <div className="w-full max-w-none">
             {children}
           </div>
         </main>
