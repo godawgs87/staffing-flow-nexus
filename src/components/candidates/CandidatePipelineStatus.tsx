@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,12 +11,14 @@ interface CandidatePipelineStatusProps {
   candidate: any;
 }
 
+type CandidateStatus = 'new' | 'screening' | 'interview' | 'offer' | 'hired' | 'rejected';
+
 const CandidatePipelineStatus = ({ candidate }: CandidatePipelineStatusProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const updateStatusMutation = useMutation({
-    mutationFn: async (newStatus: string) => {
+    mutationFn: async (newStatus: CandidateStatus) => {
       const { error } = await supabase
         .from('candidates')
         .update({ status: newStatus })
@@ -77,7 +78,7 @@ const CandidatePipelineStatus = ({ candidate }: CandidatePipelineStatusProps) =>
           <label className="text-sm font-medium text-gray-700 mb-2 block">Current Status</label>
           <Select 
             value={candidate.status} 
-            onValueChange={(value) => updateStatusMutation.mutate(value)}
+            onValueChange={(value) => updateStatusMutation.mutate(value as CandidateStatus)}
             disabled={updateStatusMutation.isPending}
           >
             <SelectTrigger>
