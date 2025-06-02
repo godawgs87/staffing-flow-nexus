@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Layout from '../components/Layout';
+import { Routes, Route } from 'react-router-dom';
 import Dashboard from '../components/Dashboard';
 import Candidates from '../components/Candidates';
 import Contacts from '../components/Contacts';
@@ -20,25 +19,23 @@ import AdminDashboard from '../components/AdminDashboard';
 
 const Index = () => {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/candidates" element={<Candidates />} />
-        <Route path="/contacts" element={<Contacts />} />
-        <Route path="/companies" element={<Companies />} />
-        <Route path="/jobs" element={<Jobs />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/pipeline" element={<Pipeline />} />
-        <Route path="/sales" element={<SalesPipeline />} />
-        <Route path="/contracts" element={<ContractIntelligence />} />
-        <Route path="/compliance" element={<ComplianceManagement />} />
-        <Route path="/ai-insights" element={<AIInsights />} />
-        <Route path="/onboarding" element={<OnboardingWorkflow />} />
-        <Route path="/payroll" element={<PayrollManagement />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/settings" element={<UserSettings />} />
-      </Routes>
-    </Layout>
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/candidates" element={<Candidates />} />
+      <Route path="/contacts" element={<Contacts />} />
+      <Route path="/companies" element={<Companies />} />
+      <Route path="/jobs" element={<Jobs />} />
+      <Route path="/projects" element={<Projects />} />
+      <Route path="/pipeline" element={<Pipeline />} />
+      <Route path="/sales" element={<SalesPipeline />} />
+      <Route path="/contracts" element={<ContractIntelligence />} />
+      <Route path="/compliance" element={<ComplianceManagement />} />
+      <Route path="/ai-insights" element={<AIInsights />} />
+      <Route path="/onboarding" element={<OnboardingWorkflow />} />
+      <Route path="/payroll" element={<PayrollManagement />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/settings" element={<UserSettings />} />
+    </Routes>
   );
 };
 
