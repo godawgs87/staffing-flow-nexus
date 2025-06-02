@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, Menu, Bell, Search, User, UserCheck, DollarSign, Shield, Brain, Building2, Contact, SearchIcon, LogOut } from 'lucide-react';
@@ -133,7 +134,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             {navigationGroups.map((group) => (
               <div key={group.title} className="mb-6">
                 {sidebarOpen && (
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-0">
                     {group.title}
                   </h3>
                 )}
