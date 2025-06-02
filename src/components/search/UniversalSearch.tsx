@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Search, User, Building2, Briefcase, FileText, Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 interface SearchResult {
   id: string;
