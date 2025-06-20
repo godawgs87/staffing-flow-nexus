@@ -1,3 +1,4 @@
+
 import {
   LayoutDashboard,
   User,
@@ -105,5 +106,108 @@ export const navigationItems = [
     url: '/settings',
     icon: Settings,
     description: 'Configure application settings'
+  }
+];
+
+export const navigationGroups = [
+  {
+    title: 'Overview',
+    items: [
+      {
+        name: 'Dashboard',
+        href: '/',
+        icon: LayoutDashboard
+      },
+      {
+        name: 'AI Agents',
+        href: '/ai-agents',
+        icon: Brain
+      }
+    ]
+  },
+  {
+    title: 'Core ATS',
+    items: [
+      {
+        name: 'Candidates',
+        href: '/candidates',
+        icon: Users
+      },
+      {
+        name: 'Jobs',
+        href: '/jobs',
+        icon: Briefcase
+      },
+      {
+        name: 'Pipeline',
+        href: '/pipeline',
+        icon: Workflow
+      },
+      {
+        name: 'Companies',
+        href: '/companies',
+        icon: Building
+      },
+      {
+        name: 'Contacts',
+        href: '/contacts',
+        icon: User
+      }
+    ]
+  },
+  {
+    title: 'Operations',
+    items: [
+      {
+        name: 'Projects',
+        href: '/projects',
+        icon: ListChecks
+      },
+      {
+        name: 'Sales',
+        href: '/sales',
+        icon: BarChart
+      },
+      {
+        name: 'Contracts',
+        href: '/contracts',
+        icon: FileSignature
+      },
+      {
+        name: 'Compliance',
+        href: '/compliance',
+        icon: ShieldCheck
+      }
+    ]
+  },
+  {
+    title: 'AI & Automation',
+    items: [
+      {
+        name: 'AI Insights',
+        href: '/ai-insights',
+        icon: Lightbulb
+      },
+      {
+        name: 'Onboarding',
+        href: '/onboarding',
+        icon: Workflow
+      }
+    ]
+  },
+  {
+    title: 'Management',
+    items: [
+      {
+        name: 'Payroll',
+        href: '/payroll',
+        icon: DollarSign
+      },
+      {
+        name: 'Settings',
+        href: '/settings',
+        icon: Settings
+      }
+    ]
   }
 ];
