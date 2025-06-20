@@ -1,4 +1,3 @@
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
@@ -22,6 +21,7 @@ import UserSettings from "./components/UserSettings";
 import AdminDashboard from "./components/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import "./App.css";
+import AIAgentsDashboard from "./components/AIAgentsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +34,7 @@ function App() {
             <Layout>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/ai-agents" element={<AIAgentsDashboard />} />
                 <Route path="/candidates" element={<Candidates />} />
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/companies" element={<Companies />} />

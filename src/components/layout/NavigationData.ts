@@ -1,50 +1,109 @@
+import {
+  LayoutDashboard,
+  User,
+  Users,
+  Building,
+  Briefcase,
+  ListChecks,
+  BarChart,
+  FileSignature,
+  ShieldCheck,
+  Lightbulb,
+  Workflow,
+  DollarSign,
+  Settings,
+  Brain,
+} from 'lucide-react';
 
-import { Users, Briefcase, BarChart3, GitBranch, FolderOpen, Settings, DollarSign, Shield, Brain, Building2, Contact, UserCheck } from 'lucide-react';
-
-export const navigationGroups = [
+export const navigationItems = [
   {
-    title: 'Overview',
-    items: [
-      { name: 'Dashboard', href: '/', icon: BarChart3 },
-    ]
+    title: 'Dashboard',
+    url: '/',
+    icon: LayoutDashboard,
+    description: 'Overview of key metrics and activities'
   },
   {
-    title: 'People & Companies',
-    items: [
-      { name: 'Candidates', href: '/candidates', icon: Users },
-      { name: 'Contacts', href: '/contacts', icon: Contact },
-      { name: 'Companies', href: '/companies', icon: Building2 },
-    ]
+    title: 'AI Agents',
+    url: '/ai-agents',
+    icon: Brain,
+    description: 'Multi-agent AI system for ATS enhancement'
   },
   {
-    title: 'Projects & Jobs',
-    items: [
-      { name: 'Active Jobs', href: '/jobs', icon: Briefcase },
-      { name: 'Pipeline', href: '/pipeline', icon: GitBranch },
-      { name: 'Projects', href: '/projects', icon: FolderOpen },
-    ]
+    title: 'Candidates',
+    url: '/candidates',
+    icon: Users,
+    description: 'Manage and track job candidates'
   },
   {
-    title: 'Business Operations',
-    items: [
-      { name: 'Sales Pipeline', href: '/sales', icon: DollarSign },
-      { name: 'Contracts', href: '/contracts', icon: Brain },
-      { name: 'Compliance', href: '/compliance', icon: Shield },
-      { name: 'Payroll', href: '/payroll', icon: DollarSign },
-    ]
+    title: 'Contacts',
+    url: '/contacts',
+    icon: User,
+    description: 'Maintain contact information'
   },
   {
-    title: 'Workforce',
-    items: [
-      { name: 'Onboarding', href: '/onboarding', icon: UserCheck },
-      { name: 'AI Insights', href: '/ai-insights', icon: Brain },
-    ]
+    title: 'Companies',
+    url: '/companies',
+    icon: Building,
+    description: 'Manage company profiles'
   },
   {
-    title: 'Administration',
-    items: [
-      { name: 'Admin', href: '/admin', icon: Shield },
-      { name: 'Settings', href: '/settings', icon: Settings },
-    ]
+    title: 'Jobs',
+    url: '/jobs',
+    icon: Briefcase,
+    description: 'Post and manage job openings'
+  },
+  {
+    title: 'Projects',
+    url: '/projects',
+    icon: ListChecks,
+    description: 'Track project progress and tasks'
+  },
+  {
+    title: 'Pipeline',
+    url: '/pipeline',
+    icon: Workflow,
+    description: 'Visualize application pipeline'
+  },
+  {
+    title: 'Sales',
+    url: '/sales',
+    icon: BarChart,
+    description: 'Track sales performance and opportunities'
+  },
+  {
+    title: 'Contracts',
+    url: '/contracts',
+    icon: FileSignature,
+    description: 'Manage contracts and compliance'
+  },
+  {
+    title: 'Compliance',
+    url: '/compliance',
+    icon: ShieldCheck,
+    description: 'Ensure regulatory compliance'
+  },
+  {
+    title: 'AI Insights',
+    url: '/ai-insights',
+    icon: Lightbulb,
+    description: 'Get AI-powered insights and recommendations'
+  },
+  {
+    title: 'Onboarding',
+    url: '/onboarding',
+    icon: Workflow,
+    description: 'Streamline onboarding process'
+  },
+  {
+    title: 'Payroll',
+    url: '/payroll',
+    icon: DollarSign,
+    description: 'Manage employee payroll and compensation'
+  },
+  {
+    title: 'Settings',
+    url: '/settings',
+    icon: Settings,
+    description: 'Configure application settings'
   }
 ];
